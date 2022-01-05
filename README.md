@@ -11,8 +11,8 @@ Make sure you have Unity 2020.3.22 installed or newer , in this case im using th
 
 ### Config 
 
-* The project already contains the oculus plugin version 35.0 
-* All the project settings are allready setup to be space swap ready 
+* The project already contains the oculus plugin version 35.0 ( only contains the VR folder as per the minimal requirments )
+* All the project settings are allready setup to be Spacewarp ready 
 * Shader graph seems to be working as expected 
 * Additional Project settings 
   * Linear , Vulkan 
