@@ -16,7 +16,6 @@ Clone the project ( or download the zip ) and in unity Hub add the project folde
 Done, now build and install the apk.
 
 **Notes** 
-* For some reason I couldn't test the project in play mode on the headset , it shows the opening app but never does launch it. If you know how to fix this lemme know. 
 * 120Hz is still in experimental stage , to get it working enable it inside the Quest headset in the settings under experimental features. 
 * Unsupported materials will result in tear , make sure to edit your shaders to support motion vectors or make them in shader graph.
 * Do not use attach objects with the default URP/Lit shader material on them as it will cause wild tears ( see below ) 
