@@ -23,6 +23,7 @@ Done, now build and install the apk.
 
 ### Config 
 
+* The scene in the screen shot can be found in `Assets/Example/Scenes/SampleScene.unity`
 * The project already contains the oculus plugin version 35.0 ( only contains the VR folder as per the minimal requirments )
 * All the project settings are allready setup to be Spacewarp ready 
 * Shader graph seems to be working as expected 
