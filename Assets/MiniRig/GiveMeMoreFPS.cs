@@ -21,6 +21,9 @@ public class GiveMeMoreFPS : MonoBehaviour
     public bool spaceWrap = false;
     public MsaaQuality MSAA; // 1,2,4,8
 
+    [Range(0,4)]
+    public float fovZoomFactor;
+
     bool spaceWrapState = false;
     
     public URP AssetURP => (URP) GraphicsSettings.currentRenderPipeline ;
@@ -34,6 +37,7 @@ public class GiveMeMoreFPS : MonoBehaviour
             case "HZ"  : DisplayFrequency = button.data; break;
             case "ASW" : spaceWrap = ! spaceWrap; break;
             case "MSA" : MSAA = (MsaaQuality) button.data; break; 
+            case "FOV" : fovZoomFactor = button.data / 100f; break;
         }
 
         if( Application.platform != RuntimePlatform.Android )
@@ -64,6 +68,7 @@ public class GiveMeMoreFPS : MonoBehaviour
             }
         };
 
+        fovZoomFactor = XRDevice.fovZoomFactor;
         MSAA = (MsaaQuality) AssetURP.msaaSampleCount;
         FoveationLevel = Oculus.Utils.GetFoveationLevel();
         resolutionScale = XRSettings.eyeTextureResolutionScale;
@@ -71,8 +76,19 @@ public class GiveMeMoreFPS : MonoBehaviour
             DisplayFrequency = rate;
     }
 
+    int cooldown = 0;
+
     void Update()
     {
+        if( cooldown-- > 0 ) return; cooldown = 10;
+
+        if( fovZoomFactor != XRDevice.fovZoomFactor )
+        {
+            XRDevice.fovZoomFactor = fovZoomFactor;
+
+            Debug.Log("FOV Zoom Factor set = " + fovZoomFactor.ToString("N2") );
+        }
+
         if( XRSettings.eyeTextureResolutionScale != resolutionScale )
         {
             XRSettings.eyeTextureResolutionScale = resolutionScale;
@@ -86,9 +102,9 @@ public class GiveMeMoreFPS : MonoBehaviour
             if( Oculus.Utils.GetFoveationLevel() != FoveationLevel )
             {
                 // this doesn't work .. 
-                // Oculus.Utils.EnableDynamicFFR(FoveationLevel > 0);
-                // Oculus.Utils.SetFoveationLevel(FoveationLevel);
-                // Debug.Log("GetFoveationLevel set = " + Oculus.Utils.GetFoveationLevel() );
+                // Unity.XR.Oculus.Utils.EnableDynamicFFR(FoveationLevel > 0);
+                // Unity.XR.Oculus.Utils.SetFoveationLevel(FoveationLevel);
+                // Debug.Log("GetFoveationLevel set = " + Unity.XR.Oculus.Utils.GetFoveationLevel() );
 
                 // this seems to work , also checkout : OVRManager.fixedFoveatedRenderingSupported
                 OVRManager.fixedFoveatedRenderingLevel = ( OVRManager.FixedFoveatedRenderingLevel ) FoveationLevel;
@@ -100,19 +116,17 @@ public class GiveMeMoreFPS : MonoBehaviour
         {
             if( rate != DisplayFrequency )
             {
+                if( Oculus.Performance.TryGetAvailableDisplayRefreshRates( out float[] rates ) )
+                    Debug.Log("Available refresh rates: " + string.Join( ", " , rates ) );
+
                 if( ! Oculus.Performance.TrySetDisplayRefreshRate( DisplayFrequency ) )
                 {
                     Debug.LogWarning($"failed to set freq to {DisplayFrequency.ToString("N1")} current {rate.ToString("N1")}");
-
-                    if( Oculus.Performance.TryGetAvailableDisplayRefreshRates( out float[] rates ) )
-                        Debug.Log("Available refresh rates: " + string.Join( ", " , rates ) );
-                    
                     DisplayFrequency = rate;
                 }
-                else if( Oculus.Performance.TryGetDisplayRefreshRate( out float rateNew ) )
-                {
+
+                else if( Oculus.Performance.TryGetDisplayRefreshRate( out float rateNew ) )    
                     Debug.Log("DisplayRefreshRate set = " + rateNew.ToString("N1") );
-                }
             } 
         }
 
@@ -123,7 +137,7 @@ public class GiveMeMoreFPS : MonoBehaviour
                 spaceWrapState = spaceWrap;
 
                 // OVRManager.SetSpaceWarp( spaceWrapState );
-                
+
                 OculusXRPlugin.SetSpaceWarp( spaceWrapState ? OVRPlugin.Bool.True : OVRPlugin.Bool.False );
 
                 Debug.Log("SpaceWrap set = " + ( spaceWrap ? "T" : "F" ) );
