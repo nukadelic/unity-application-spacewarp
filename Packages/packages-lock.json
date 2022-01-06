@@ -74,7 +74,7 @@
         "com.unity.modules.physics": "1.0.0",
         "com.unity.modules.jsonserialize": "1.0.0"
       },
-      "hash": "7f396c66a01d1ad490e674495ece4dd26bb3c5ef"
+      "hash": "8043a5ba636acc53a86a0ad32cf1501fe9d4662a"
     },
     "com.unity.render-pipelines.universal": {
       "version": "https://github.com/nukadelic/asw-render-pipelines-universal.git",
@@ -85,7 +85,7 @@
         "com.unity.render-pipelines.core": "10.8.0",
         "com.unity.shadergraph": "10.8.0"
       },
-      "hash": "375e9981b51d8ccb254aec3e49f991358bb9b585"
+      "hash": "a1048bc34c0a79bda8fce06868023cf4e78c6d82"
     },
     "com.unity.searcher": {
       "version": "4.3.2",
@@ -111,7 +111,7 @@
         "com.unity.render-pipelines.core": "10.8.0",
         "com.unity.searcher": "4.3.2"
       },
-      "hash": "8938e6469514300a43b0a71362485d9e8618103d"
+      "hash": "565f3bd2f82f31f78a332433deb9790255706e1c"
     },
     "com.unity.subsystemregistration": {
       "version": "1.0.6",
@@ -169,7 +169,7 @@
         "com.unity.shadergraph": "10.8.0",
         "com.unity.render-pipelines.core": "10.8.0"
       },
-      "hash": "bc41e8fb675e1906df54b935c8c54bf4d7787544"
+      "hash": "4c7a65edd3f78af8379d4e08bd04139ddeead3cb"
     },
     "com.unity.xr.legacyinputhelpers": {
       "version": "2.1.8",
