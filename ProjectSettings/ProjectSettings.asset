@@ -135,7 +135,12 @@ PlayerSettings:
     16:9: 1
     Others: 1
   bundleVersion: 0.1
-  preloadedAssets: []
+  preloadedAssets:
+  - {fileID: 0}
+  - {fileID: 7544886723051870169, guid: d0dfc8ad3fe13c149a298e2a215fa83c, type: 2}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: ce44833c65c3add48aa46506cc3eb1ee, type: 2}
+  - {fileID: -3695074640418942050, guid: 027eb507cad27864d82332c05b1e1369, type: 2}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -154,6 +159,7 @@ PlayerSettings:
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
     Android: com.nukadelic.aswsample
+    Standalone: com.nukadelic.asw-sample
   buildNumber:
     Standalone: 0
     iPhone: 0
@@ -782,7 +788,7 @@ PlayerSettings:
     m_VersionCode: 1
     m_VersionName: 
   apiCompatibilityLevel: 6
-  activeInputHandler: 0
+  activeInputHandler: 2
   cloudProjectId: 
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
