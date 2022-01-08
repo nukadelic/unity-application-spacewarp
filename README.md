@@ -41,7 +41,7 @@ Done, now build and install the apk.
 ### Building 
 
 For faster builds you can swap to the Mono Scripting backend in `Project Settings > Player > Other Settings > Configuration > Scripting Backend` , but it is required to have IL2CPP when publishing the application on the store 
-
+  
 ### App space wrap object tearing 
 
 For some reason the standard URP lit shader will cause all sorts of abnnormal reandering anomalies, here a few screenshots were I have attached a simple Urp/Lit cube to my hands , the same is true if you would attach any other object that exists in the sample scene - as logn as the object is stationary this will not happaned :  
@@ -51,7 +51,12 @@ For some reason the standard URP lit shader will cause all sorts of abnnormal re
 It doesn't matter if you attach the object to your hand or just move it around in the scene , the same will be true for any object in motion which is using the borken material.  
   
 ![cube](https://raw.githubusercontent.com/nukadelic/unity-application-spacewarp/master/Img/cube.gif)
+  
+  
+### Links 
 
+* Application SpaceWarp Developer Guide https://developer.oculus.com/documentation/unity/unity-asw
+* Asynchronous Timewarp & Spacewarp for VR | Bonnie Mathew 2017 https://www.youtube.com/watch?v=gqVIJtRjtr8
 
 ### Donate 
 
