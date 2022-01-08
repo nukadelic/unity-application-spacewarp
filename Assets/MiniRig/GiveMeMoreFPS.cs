@@ -28,10 +28,10 @@ public class GiveMeMoreFPS : MonoBehaviour
     public bool spaceWrap = false;
     public MsaaQuality MSAA; // 1,2,4,8
     public float renderViewportScale;
-    [Range(0,4)] public float fovZoomFactor;
+    // [Range(0,4)] public float fovZoomFactor;
     bool spaceWrapState = false;
     public URP AssetURP => (URP) GraphicsSettings.currentRenderPipeline ;
-    
+    Camera cam;
 
     // Button click event handle 
 
@@ -45,7 +45,7 @@ public class GiveMeMoreFPS : MonoBehaviour
             case "HZ"  : DisplayFrequency = button.data;            break;
             case "ASW" : spaceWrap = ! spaceWrap;                   break;
             case "MSA" : MSAA = (MsaaQuality) button.data;          break; 
-            case "FOV" : fovZoomFactor = button.data / 100f;        break;
+         // case "FOV" : fovZoomFactor = button.data / 100f;        break;
             case "RVP" : renderViewportScale = button.data / 100f;  break;
         }
 
@@ -62,16 +62,17 @@ public class GiveMeMoreFPS : MonoBehaviour
 
     void Start()
     {
+
         // Show debug log message on the wall 
 
         Application.logMessageReceived += ( a, b, c ) => {
             if( c == LogType.Warning ) a = $"<color=\"yellow\">{a}</color>";
             else if( c != LogType.Log )a = $"<color=\"red\">{a}</color>";
             logLines.Add( a );
-            label.text = string.Join("\n", logLines);label.UpdateVertexData();
+            label.text = string.Join("\n", logLines);label.ForceMeshUpdate();
             if( label.isTextTruncated )
             for( var i = 0; i < 5 ; ++i ) {
-                label.text = string.Join("\n", logLines);label.UpdateVertexData();
+                label.text = string.Join("\n", logLines);label.ForceMeshUpdate();
                 if( label.isTextTruncated && logLines.Count > 0 )
                     logLines.RemoveAt( 0 );
             }
@@ -81,7 +82,8 @@ public class GiveMeMoreFPS : MonoBehaviour
         
         resolutionScale = XRSettings.eyeTextureResolutionScale;
         renderViewportScale = XRSettings.renderViewportScale;
-        fovZoomFactor = XRDevice.fovZoomFactor;
+        // fovZoomFactor = XRDevice.fovZoomFactor;
+        // cam = Camera.main; if( cam ) cam.stereoTargetEye = StereoTargetEyeMask.None;
         MSAA = (MsaaQuality) AssetURP.msaaSampleCount;
 
         // Quest values 
@@ -110,11 +112,13 @@ public class GiveMeMoreFPS : MonoBehaviour
             Debug.Log("Render View Port Scale set = " + renderViewportScale.ToString("N2") );
         }
 
-        if( fovZoomFactor != XRDevice.fovZoomFactor )
-        {
-            XRDevice.fovZoomFactor = fovZoomFactor;
-            Debug.Log("FOV Zoom Factor set = " + fovZoomFactor.ToString("N2") );
-        }
+        // if( fovZoomFactor != XRDevice.fovZoomFactor )
+        // {
+        //     // if( cam ) cam.fieldOfView = 60 * fovZoomFactor;
+
+        //     XRDevice.fovZoomFactor = fovZoomFactor;
+        //     Debug.Log("FOV Zoom Factor set = " + fovZoomFactor.ToString("N2") );
+        // }
 
         if( XRSettings.eyeTextureResolutionScale != resolutionScale )
         {
