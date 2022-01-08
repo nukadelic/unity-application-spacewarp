@@ -1,6 +1,6 @@
-# Unity Application Spacewarp
-### Sample project
-
+# Application Spacewarp Template Project
+  
+  
 Project is preconfigured with ASW for the Oculus Quest 1 &amp; 2 using a custom render pipeline 
 
 ![screenshot](https://raw.githubusercontent.com/nukadelic/unity-application-spacewarp/master/Img/screenshot.png)
@@ -18,7 +18,7 @@ Done, now build and install the apk.
 **Notes** 
 * 120Hz is still in experimental stage , to get it working enable it inside the Quest headset in the settings under experimental features. 
 * Unsupported materials will result in tear , make sure to edit your shaders to support motion vectors or make them in shader graph.
-* Do not use attach objects with the default URP/Lit shader material on them as it will cause wild tears ( see below ) 
+* Lit shaders will cause wild tearing ( see below ) 
 
 ### Config 
 
@@ -47,16 +47,6 @@ For faster builds you can swap to the Mono Scripting backend in `Project Setting
 For some reason the standard URP lit shader will cause all sorts of abnnormal reandering anomalies, here a few screenshots were I have attached a simple Urp/Lit cube to my hands , the same is true if you would attach any other object that exists in the sample scene - as logn as the object is stationary this will not happaned :  
   
 ![urp-tear](https://raw.githubusercontent.com/nukadelic/unity-application-spacewarp/master/Img/urp-tear.png)
-
-Tested the following materials : 
-* M1 = URP / Unlit 
-* M2 = URP / Lit (*broken*) 
-* M3 = Shader Graph / Unlit 
-* M4 = Shader Graph / Lit  ( use this instead , seems to work fine ... ) 
-* M5 = Shader Graph / Sprite Lit 
-* M6 = Shader Graph / Sprite Unlit  
-  
-![materials](https://raw.githubusercontent.com/nukadelic/unity-application-spacewarp/master/Img/materials.png)
 
 It doesn't matter if you attach the object to your hand or just move it around in the scene , the same will be true for any object in motion which is using the borken material.  
   
