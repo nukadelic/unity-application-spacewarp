@@ -146,9 +146,12 @@ public class GiveMeMoreFPS : MonoBehaviour
                 // Unity.XR.Oculus.Utils.SetFoveationLevel(FoveationLevel);
                 // Debug.Log("GetFoveationLevel set = " + Unity.XR.Oculus.Utils.GetFoveationLevel() );
 
+                OculusPlugin.ffrValue = ( OculusPlugin.FFR ) FoveationLevel;
+                Debug.Log("GetFoveationLevel set = " + OculusPlugin.ffrValue );
+
                 // this seems to work , also checkout : OVRManager.fixedFoveatedRenderingSupported
-                OVRManager.fixedFoveatedRenderingLevel = ( OVRManager.FixedFoveatedRenderingLevel ) FoveationLevel;
-                Debug.Log("GetFoveationLevel set = " + OVRManager.fixedFoveatedRenderingLevel );
+                // OVRManager.fixedFoveatedRenderingLevel = ( OVRManager.FixedFoveatedRenderingLevel ) FoveationLevel;
+                // Debug.Log("GetFoveationLevel set = " + OVRManager.fixedFoveatedRenderingLevel );
             }
         }
 
