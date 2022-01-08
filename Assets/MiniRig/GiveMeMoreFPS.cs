@@ -14,7 +14,9 @@ public class GiveMeMoreFPS : MonoBehaviour
 {
     // on screen debug log variables 
     List<string> logLines = new List<string>();
-    public TextMeshPro label;
+    public TextMeshPro logField;
+
+    public TextMeshPro fpsLabel;
 
 
     // quality parameters 
@@ -53,7 +55,7 @@ public class GiveMeMoreFPS : MonoBehaviour
         {
             switch( button.type )
             {
-                case "FFR" : case "ASW" : case "HZ" :
+                case "FFR" : case "ASW" : 
                 Debug.LogWarning("Operation only supported on android devices");
                 break;
             }
@@ -62,18 +64,17 @@ public class GiveMeMoreFPS : MonoBehaviour
 
     void Start()
     {
-
         // Show debug log message on the wall 
 
         Application.logMessageReceived += ( a, b, c ) => {
             if( c == LogType.Warning ) a = $"<color=\"yellow\">{a}</color>";
             else if( c != LogType.Log )a = $"<color=\"red\">{a}</color>";
             logLines.Add( a );
-            label.text = string.Join("\n", logLines);label.ForceMeshUpdate();
-            if( label.isTextTruncated )
+            logField.text = string.Join("\n", logLines);logField.ForceMeshUpdate();
+            if( logField.isTextTruncated )
             for( var i = 0; i < 5 ; ++i ) {
-                label.text = string.Join("\n", logLines);label.ForceMeshUpdate();
-                if( label.isTextTruncated && logLines.Count > 0 )
+                logField.text = string.Join("\n", logLines);logField.ForceMeshUpdate();
+                if( logField.isTextTruncated && logLines.Count > 0 )
                     logLines.RemoveAt( 0 );
             }
         };
@@ -108,8 +109,9 @@ public class GiveMeMoreFPS : MonoBehaviour
 
         if( renderViewportScale != XRSettings.renderViewportScale )
         {
+            Debug.Log($"Render View Port Scale: {XRSettings.renderViewportScale:N3} -> {renderViewportScale:N3}");
             XRSettings.renderViewportScale = renderViewportScale;
-            Debug.Log("Render View Port Scale set = " + renderViewportScale.ToString("N2") );
+            renderViewportScale = XRSettings.renderViewportScale;
         }
 
         // if( fovZoomFactor != XRDevice.fovZoomFactor )
@@ -124,7 +126,7 @@ public class GiveMeMoreFPS : MonoBehaviour
         {
             XRSettings.eyeTextureResolutionScale = resolutionScale;
             AssetURP.renderScale = resolutionScale;
-            Debug.Log("Resolution Scale set = " + resolutionScale.ToString("N2") );
+            Debug.Log("Resolution Scale set = " + AssetURP.renderScale.ToString("N2") );
         }
 
         if( (int) MSAA != AssetURP.msaaSampleCount )
@@ -170,6 +172,14 @@ public class GiveMeMoreFPS : MonoBehaviour
                 } 
             }
         }
+        else 
+        {
+            if( Application.targetFrameRate != (int) DisplayFrequency )
+            {
+                Application.targetFrameRate = ( int ) DisplayFrequency;
+                Debug.Log("Frame Rate set = " + Application.targetFrameRate );
+            }
+        }
 
 
         if( Application.platform == RuntimePlatform.Android )
@@ -183,6 +193,29 @@ public class GiveMeMoreFPS : MonoBehaviour
             }
         }
 
-        #endif
+        #endif // UNITY_ANDROID
+    }
+
+    float fps_time = 0;
+    float fps_value = 0;
+
+    int fps_count = 0;
+
+    void LateUpdate()
+    {
+        fps_count ++ ;
+
+        var dt = Time.deltaTime;
+
+        fps_time += dt;
+
+        if( fps_time >= 1 )
+        {
+            fps_value = ( fps_count / fps_time );
+
+            fps_time = fps_count = 0;
+        }
+
+        fpsLabel.text = fps_value.ToString("N1") + " FPS     " + ( (int) ( dt * 1000 ) ) + " ms";
     }
 }

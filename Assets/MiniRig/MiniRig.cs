@@ -14,9 +14,15 @@ public class MiniRig : MonoBehaviour
     {        
         if( ! Application.isPlaying ) return;
         if( subsystems.Count == 0 ) SubsystemManager.GetInstances( subsystems );
-        if( subsystems.Count != 0 && subsystems[ 0 ] != null )
-            if( subsystems[ 0 ].GetTrackingOriginMode() != trackingMode )
-                subsystems[ 0 ].TrySetTrackingOriginMode( trackingMode );
+        var first_subsystem = subsystems[ 0 ];
+        if( subsystems.Count == 0 || first_subsystem == null ) return;
+
+        // Those last two checks only needed when the app is existing , if removed there 
+        // will be a null reference error - doesn't like its needed but its here 
+        if( first_subsystem.running || first_subsystem.subsystemDescriptor != null ) return;
+        
+        if( first_subsystem.GetTrackingOriginMode() != trackingMode )
+            first_subsystem.TrySetTrackingOriginMode( trackingMode );
     }
 
     public Transform head;
@@ -41,9 +47,9 @@ public class MiniRig : MonoBehaviour
         if( dict[ device ].Count == 0 ) 
         {
             InputDevices.GetDevicesWithCharacteristics( device, dict[ device ] );
-            var futures = new List<InputFeatureUsage>();
-            if( dict[ device ].Count > 0 && dict[ device ][ 0 ].TryGetFeatureUsages( futures ) )
-                Debug.Log("Device " + device + " futures: " + string.Join(", ", futures.Select( x => x.name ) ) );
+            // var futures = new List<InputFeatureUsage>();
+            // if( dict[ device ].Count > 0 && dict[ device ][ 0 ].TryGetFeatureUsages( futures ) )
+            //     Debug.Log("Device " + device + " futures: " + string.Join(", ", futures.Select( x => x.name ) ) );
         }
         
         if( dict[ device ].Count > 0 ) input = dict[ device ][ 0 ];
