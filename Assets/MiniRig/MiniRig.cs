@@ -13,32 +13,39 @@ public class MiniRig : MonoBehaviour
     void UpdateTracking()
     {        
         if( ! Application.isPlaying ) return;
+
         if( subsystems.Count == 0 ) SubsystemManager.GetInstances( subsystems );
         var first_subsystem = subsystems[ 0 ];
+        
         if( subsystems.Count == 0 || first_subsystem == null ) return;
 
-        // Those last two checks only needed when the app is existing , if removed there 
-        // will be a null reference error - doesn't like its needed but its here 
+        // This check below is only needed when the app is existing , when removed there 
+        // will be a null reference error - doesn't seem like its needed but its here 
         if( first_subsystem.running || first_subsystem.subsystemDescriptor != null ) return;
         
-        if( first_subsystem.GetTrackingOriginMode() != trackingMode )
-            first_subsystem.TrySetTrackingOriginMode( trackingMode );
+        var active = first_subsystem.GetTrackingOriginMode();
+
+        if( active == trackingMode ) return;
+        if( first_subsystem.TrySetTrackingOriginMode( trackingMode ) ) return;
+        
+        Debug.LogWarning( $"Cannot set tracking origin mode to {trackingMode}, default restored to {active}" );
+        trackingMode = active;
     }
 
     public Transform head;
     public Transform handL;
     public Transform handR;
 
-    const Device DeviceHead = Device.HeadMounted;
-    const Device DeviceLeft = Device.Left | Device.Controller;
-    const Device DeviceRight = Device.Right | Device.Controller;
+    const Device DEVICE_HEAD = Device.HeadMounted;
+    const Device DEVICE_LEFT = Device.Left | Device.Controller;
+    const Device DEVICE_RIGHT = Device.Right | Device.Controller;
     
     
     Dictionary<Device,List<InputDevice>> dict = new Dictionary<Device, List<InputDevice>>() 
     {
-        { DeviceHead ,  new List<InputDevice>() },
-        { DeviceLeft ,  new List<InputDevice>() },
-        { DeviceRight , new List<InputDevice>() }
+        { DEVICE_HEAD  ,  new List<InputDevice>() },
+        { DEVICE_LEFT  ,  new List<InputDevice>() },
+        { DEVICE_RIGHT ,  new List<InputDevice>() }
     };
 
     bool TryGet( Device device , out InputDevice input )
@@ -69,12 +76,12 @@ public class MiniRig : MonoBehaviour
     
     void UpdateDevices()
     {
-        if( TryGet( DeviceHead, out InputDevice H ) )
+        if( TryGet( DEVICE_HEAD, out InputDevice H ) )
         {
             ApplyTransform( H, head );
         }
 
-        if( TryGet( DeviceLeft, out InputDevice L ) )
+        if( TryGet( DEVICE_LEFT, out InputDevice L ) )
         {
             ApplyTransform( L, handL );
 
@@ -85,7 +92,7 @@ public class MiniRig : MonoBehaviour
             }
         }
 
-        if( TryGet( DeviceRight, out InputDevice R ) )
+        if( TryGet( DEVICE_RIGHT, out InputDevice R ) )
         {
             ApplyTransform( R, handR );
 

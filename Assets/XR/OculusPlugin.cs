@@ -8,15 +8,39 @@ using System.Runtime.InteropServices;
 
 public static class OculusPlugin
 {
+    public static bool IsSupported()
+    {
+        #if OVRPLUGIN_UNSUPPORTED_PLATFORM
+            return false;
+        #endif
+
+        return true;
+    }
+
+
     public enum FFR { Off = 0, Low = 1, Medium = 2, High = 3, HighTop = 4, EnumSize = 0x7FFFFFFF }
 
-    public static bool ffrSupprted => 0 == DLL.ovrp_GetTiledMultiResSupported( out int supprted ) ? supprted == 1 : false;
-    public static FFR ffrValue 
+    static bool ffrSupprted => 0 == DLL.ovrp_GetTiledMultiResSupported( out int supprted ) ? supprted == 1 : false;
+    static FFR ffrValue 
     {
         get => ffrSupprted ? ( 0 == DLL.ovrp_GetTiledMultiResLevel( out FFR value ) ? value : default ) : default ;
         
         set { if( ffrSupprted ) DLL.ovrp_SetTiledMultiResLevel( value ); }
     }
+
+    public static bool TryGetFFR( out FFR value )
+    {
+        if( ! ffrSupprted ) { value = default; return false; }
+        return DLL.ovrp_GetTiledMultiResLevel( out value ) == 0;
+    }
+
+    public static bool TrySetFFR( FFR value )
+    {
+        if( ! ffrSupprted ) return false;
+        return DLL.ovrp_SetTiledMultiResLevel( value ) == 0;
+    }
+
+    public static void SetSpaceWrap( bool value ) => DLL.SetSpaceWarp( value ? 1 : 0 );
 
     static class DLL
     {
@@ -46,5 +70,20 @@ public static class OculusPlugin
 
         [DllImport("OVRPlugin", CallingConvention = CallingConvention.Cdecl)]
         public static extern int ovrp_GetAppAsymmetricFov(out int useAsymmetricFov);
+
+        [DllImport("OculusXRPlugin")]
+        public static extern void SetColorScale(float x, float y, float z, float w);
+
+        [DllImport("OculusXRPlugin")]
+        public static extern void SetColorOffset(float x, float y, float z, float w);
+
+        [DllImport("OculusXRPlugin")]
+        public static extern void SetSpaceWarp( int on );
+
+        [DllImport("OculusXRPlugin")]
+        public static extern void SetAppSpacePosition(float x, float y, float z);
+
+        [DllImport("OculusXRPlugin")]
+        public static extern void SetAppSpaceRotation(float x, float y, float z, float w);
     }
 }

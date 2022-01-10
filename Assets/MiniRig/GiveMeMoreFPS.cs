@@ -10,6 +10,10 @@ using URP = UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
+#if !(UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN || (UNITY_ANDROID && !UNITY_EDITOR))
+#define OCULUS_UNSUPPORTED
+#endif
+
 public class GiveMeMoreFPS : MonoBehaviour
 {
     // on screen debug log variables 
@@ -135,19 +139,26 @@ public class GiveMeMoreFPS : MonoBehaviour
             Debug.Log("MSAA set = " + (MsaaQuality) AssetURP.msaaSampleCount );
         }
 
-        #if UNITY_ANDROID
+        #if ( UNITY_ANDROID && !UNITY_EDITOR )
 
-        if( Application.platform == RuntimePlatform.Android )
+        if( Application.platform == RuntimePlatform.Android ) //! FFR
         {
-            if( Oculus.Utils.GetFoveationLevel() != FoveationLevel )
+            var currentFFR = ( OculusPlugin.FFR ) FoveationLevel;   
+
+            if( OculusPlugin.TryGetFFR( out OculusPlugin.FFR ffr1 ) && ffr1 != currentFFR )
             {
                 // this doesn't work .. 
                 // Unity.XR.Oculus.Utils.EnableDynamicFFR(FoveationLevel > 0);
                 // Unity.XR.Oculus.Utils.SetFoveationLevel(FoveationLevel);
                 // Debug.Log("GetFoveationLevel set = " + Unity.XR.Oculus.Utils.GetFoveationLevel() );
 
-                OculusPlugin.ffrValue = ( OculusPlugin.FFR ) FoveationLevel;
-                Debug.Log("GetFoveationLevel set = " + OculusPlugin.ffrValue );
+                if( OculusPlugin.TrySetFFR( ( OculusPlugin.FFR ) FoveationLevel ) )
+                {
+                    if( OculusPlugin.TryGetFFR( out OculusPlugin.FFR ffr2 ) )
+                    {
+                        Debug.Log("GetFoveationLevel set = " + ffr2 );
+                    }
+                }
 
                 // this seems to work , also checkout : OVRManager.fixedFoveatedRenderingSupported
                 // OVRManager.fixedFoveatedRenderingLevel = ( OVRManager.FixedFoveatedRenderingLevel ) FoveationLevel;
@@ -155,7 +166,7 @@ public class GiveMeMoreFPS : MonoBehaviour
             }
         }
 
-        if( Application.platform == RuntimePlatform.Android )
+        if( Application.platform == RuntimePlatform.Android ) //! HZ
         {
             if( Oculus.Performance.TryGetDisplayRefreshRate( out float rate ) )
             {
@@ -185,12 +196,13 @@ public class GiveMeMoreFPS : MonoBehaviour
         }
 
 
-        if( Application.platform == RuntimePlatform.Android )
+        if( Application.platform == RuntimePlatform.Android ) //! ASW
         {
             if( spaceWrap != spaceWrapState )
             {
                 spaceWrapState = spaceWrap;
-                OculusXRPlugin.SetSpaceWarp( spaceWrapState ? OVRPlugin.Bool.True : OVRPlugin.Bool.False );
+                OculusPlugin.SetSpaceWrap( spaceWrapState );
+                // OculusXRPlugin.SetSpaceWarp( spaceWrapState ? OVRPlugin.Bool.True : OVRPlugin.Bool.False );
                 // OVRManager.SetSpaceWarp( spaceWrapState );
                 Debug.Log("SpaceWrap set = " + ( spaceWrap ? "T" : "F" ) );
             }
