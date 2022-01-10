@@ -55,9 +55,9 @@ It doesn't matter if you attach the object to your hand or just move it around i
   
 ### Links 
 
-* ASW Render pipeline https://github.com/Oculus-VR/Unity-Graphics/tree/2020.3/oculus-app-spacewarp ( [50a6799](https://github.com/Oculus-VR/Unity-Graphics/tree/50a6799b67a17ed743ab121147eabcdfc8a131a4) ) 
-* Application SpaceWarp Developer Guide https://developer.oculus.com/documentation/unity/unity-asw
-* Asynchronous Timewarp & Spacewarp for VR | Bonnie Mathew 2017 https://www.youtube.com/watch?v=gqVIJtRjtr8
+* UPM packages are from the oculus [ASW Render pipeline](https://github.com/Oculus-VR/Unity-Graphics/tree/2020.3/oculus-app-spacewarp) , from the following branch: [50a6799](https://github.com/Oculus-VR/Unity-Graphics/tree/50a6799b67a17ed743ab121147eabcdfc8a131a4), view point of fork from Unity URP 10.x to oculus-asw here : [git-compare](https://github.com/Unity-Technologies/Graphics/compare/10.x.x/release...Oculus-VR:2020.3/oculus-app-spacewarp)
+* ASW Developer Guide : https://developer.oculus.com/documentation/unity/unity-asw
+* Video Lecture [Asynchronous Timewarp & Spacewarp for VR | Bonnie Mathew 2017](https://www.youtube.com/watch?v=gqVIJtRjtr8)
 
 ### Donate 
 
