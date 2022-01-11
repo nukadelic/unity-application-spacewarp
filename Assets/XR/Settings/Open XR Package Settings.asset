@@ -41,6 +41,26 @@ MonoBehaviour:
   company: Unity
   priority: 0
   required: 0
+--- !u!114 &-7214097472949141904
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9561d46ebfa4c94aaaab678de8e0dd2, type: 3}
+  m_Name: OpenXRNativeWrapper Android
+  m_EditorClassIdentifier: 
+  m_enabled: 0
+  nameUi: OpenXR Culling Fix
+  version: 
+  featureIdInternal: 
+  openxrExtensionStrings: 
+  company: 
+  priority: 0
+  required: 0
 --- !u!114 &-6324417797154545470
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -61,6 +81,46 @@ MonoBehaviour:
   company: Unity
   priority: 0
   required: 0
+--- !u!114 &-6128500639132368250
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9561d46ebfa4c94aaaab678de8e0dd2, type: 3}
+  m_Name: OpenXRNativeWrapper Android
+  m_EditorClassIdentifier: 
+  m_enabled: 0
+  nameUi: OpenXR Culling Fix
+  version: 
+  featureIdInternal: 
+  openxrExtensionStrings: 
+  company: 
+  priority: 0
+  required: 0
+--- !u!114 &-5895911129793371726
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9561d46ebfa4c94aaaab678de8e0dd2, type: 3}
+  m_Name: OpenXRNativeWrapper Standalone
+  m_EditorClassIdentifier: 
+  m_enabled: 0
+  nameUi: OpenXR Culling Fix
+  version: 
+  featureIdInternal: 
+  openxrExtensionStrings: 
+  company: 
+  priority: 0
+  required: 0
 --- !u!114 &-5762179166637477183
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -79,6 +139,26 @@ MonoBehaviour:
   featureIdInternal: com.unity.openxr.feature.oculusquest
   openxrExtensionStrings: XR_OCULUS_android_initialize_loader
   company: Unity
+  priority: 0
+  required: 0
+--- !u!114 &-5328722204762917097
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9561d46ebfa4c94aaaab678de8e0dd2, type: 3}
+  m_Name: OpenXRNativeWrapper Standalone
+  m_EditorClassIdentifier: 
+  m_enabled: 0
+  nameUi: OpenXR Culling Fix
+  version: 
+  featureIdInternal: 
+  openxrExtensionStrings: 
+  company: 
   priority: 0
   required: 0
 --- !u!114 &-3484063544023944326
@@ -161,6 +241,26 @@ MonoBehaviour:
   company: Unity
   priority: 0
   required: 0
+--- !u!114 &-686156053691222759
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9561d46ebfa4c94aaaab678de8e0dd2, type: 3}
+  m_Name: OpenXRNativeWrapper Standalone
+  m_EditorClassIdentifier: 
+  m_enabled: 1
+  nameUi: OpenXR Culling Fix
+  version: 
+  featureIdInternal: 
+  openxrExtensionStrings: 
+  company: 
+  priority: 0
+  required: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -231,7 +331,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d6ccd3d0ef0f1d458e69421dccbdae1, type: 3}
   m_Name: ValveIndexControllerProfile Standalone
   m_EditorClassIdentifier: 
-  m_enabled: 0
+  m_enabled: 1
   nameUi: Valve Index Controller Profile
   version: 0.0.1
   featureIdInternal: com.unity.openxr.feature.input.valveindex
@@ -280,6 +380,7 @@ MonoBehaviour:
   - {fileID: -3484063544023944326}
   - {fileID: -8641839402576883941}
   - {fileID: 2539829209462966808}
+  - {fileID: -686156053691222759}
   - {fileID: 7157723889208671395}
   - {fileID: 2781024500042922838}
   m_renderMode: 1
@@ -358,7 +459,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 274c02963f889a64e90bc2e596e21d13, type: 3}
   m_Name: HTCViveControllerProfile Standalone
   m_EditorClassIdentifier: 
-  m_enabled: 0
+  m_enabled: 1
   nameUi: HTC Vive Controller Profile
   version: 0.0.1
   featureIdInternal: com.unity.openxr.feature.input.htcvive
@@ -385,6 +486,7 @@ MonoBehaviour:
   - {fileID: 7608319035648897836}
   - {fileID: -5762179166637477183}
   - {fileID: -6324417797154545470}
+  - {fileID: -6128500639132368250}
   - {fileID: 1380181197344413497}
   m_renderMode: 1
   m_depthSubmissionMode: 0
@@ -406,5 +508,25 @@ MonoBehaviour:
   featureIdInternal: com.unity.openxr.feature.input.handtracking
   openxrExtensionStrings: XR_MSFT_hand_interaction
   company: Unity
+  priority: 0
+  required: 0
+--- !u!114 &8192256578686632409
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9561d46ebfa4c94aaaab678de8e0dd2, type: 3}
+  m_Name: OpenXRNativeWrapper Android
+  m_EditorClassIdentifier: 
+  m_enabled: 0
+  nameUi: OpenXR Culling Fix
+  version: 
+  featureIdInternal: 
+  openxrExtensionStrings: 
+  company: 
   priority: 0
   required: 0
