@@ -18,7 +18,7 @@ Done, now build and install the apk.
 **Notes** 
 * 120Hz is still in experimental stage , to get it working enable it inside the Quest headset in the settings under experimental features. 
 * Unsupported materials will result in tear , make sure to edit your shaders to support motion vectors or make them in shader graph.
-* Lit shaders will cause wild tearing ( see below ) 
+* [Fixed](https://github.com/Oculus-VR/Unity-Graphics/issues/3) <s>Lit shaders will cause wild tearing ( see below ) </s>
 
 ### Config 
 
@@ -30,6 +30,7 @@ Done, now build and install the apk.
   * Linear , Vulkan 
   * Android 8.0 'Oreo' ( API Level 26 ) 
   * IL2CPP , .NET 4.x  
+  * Texture Compression : ASTC 
 * The following packages are already included in the project _manifest.json_
 ``` 
 + https://github.com/nukadelic/asw-shader-graph.git
@@ -41,17 +42,6 @@ Done, now build and install the apk.
 ### Building 
 
 For faster builds you can swap to the Mono Scripting backend in `Project Settings > Player > Other Settings > Configuration > Scripting Backend` , but it is required to have IL2CPP when publishing the application on the store 
-  
-### App space wrap object tearing 
-
-For some reason the standard URP lit shader will cause all sorts of abnnormal reandering anomalies, here a few screenshots were I have attached a simple Urp/Lit cube to my hands , the same is true if you would attach any other object that exists in the sample scene - as logn as the object is stationary this will not happaned :  
-  
-![urp-tear](https://raw.githubusercontent.com/nukadelic/unity-application-spacewarp/master/Img/urp-tear.png)
-
-It doesn't matter if you attach the object to your hand or just move it around in the scene , the same will be true for any object in motion which is using the borken material.  
-  
-![cube](https://raw.githubusercontent.com/nukadelic/unity-application-spacewarp/master/Img/cube.gif)
-  
   
 ### Links 
 
