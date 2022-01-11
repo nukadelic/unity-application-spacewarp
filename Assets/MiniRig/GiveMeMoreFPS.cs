@@ -18,6 +18,7 @@ public class GiveMeMoreFPS : MonoBehaviour
 {
     // on screen debug log variables 
     List<string> logLines = new List<string>();
+    public Camera mainCamera;
     public TextMeshPro logField;
 
     public TextMeshPro fpsLabel;
@@ -28,16 +29,18 @@ public class GiveMeMoreFPS : MonoBehaviour
     
     // 0 = Off, 1 = Low, 2 = Medium, 3 = High, 4 = High Top
     // Read more at : https://developer.oculus.com/documentation/unity/unity-fixed-foveated-rendering/
-    [Range(0,4)] public int FoveationLevel = 0;
-    [Range(0.2f,1f)] public float resolutionScale = 1f;
-    public float DisplayFrequency = 72;
-    public bool spaceWrap = false;
-    public MsaaQuality MSAA; // 1,2,4,8
-    public float renderViewportScale;
-    // [Range(0,4)] public float fovZoomFactor;
+    [Range(0,4)] int FoveationLevel = 0;
+    [Range(0.2f,1f)] float resolutionScale = 1f;
+    float DisplayFrequency = 72;
+    bool spaceWrap = false;
+    MsaaQuality MSAA; // 1,2,4,8
+    float renderViewportScale;
+    // [Range(0,4)] float fovZoomFactor;
     bool spaceWrapState = false;
-    public URP AssetURP => (URP) GraphicsSettings.currentRenderPipeline ;
-    Camera cam;
+    URP AssetURP => (URP) GraphicsSettings.currentRenderPipeline ;
+    DepthTextureMode dpethOriginal;
+    const DepthTextureMode MotionVectors = DepthTextureMode.MotionVectors | DepthTextureMode.Depth;
+
 
     // Button click event handle 
 
@@ -66,7 +69,7 @@ public class GiveMeMoreFPS : MonoBehaviour
         }
     }
 
-    void Start()
+    void Awake()
     {
         // Show debug log message on the wall 
 
@@ -82,12 +85,18 @@ public class GiveMeMoreFPS : MonoBehaviour
                     logLines.RemoveAt( 0 );
             }
         };
+    }
+
+    void Start()
+    {
+        Debug.Log("V 1.0.1");
 
         // Get default values 
         
         resolutionScale = XRSettings.eyeTextureResolutionScale;
         renderViewportScale = XRSettings.renderViewportScale;
         // fovZoomFactor = XRDevice.fovZoomFactor;
+        dpethOriginal = mainCamera.depthTextureMode;
         // cam = Camera.main; if( cam ) cam.stereoTargetEye = StereoTargetEyeMask.None;
         MSAA = (MsaaQuality) AssetURP.msaaSampleCount;
 
@@ -166,8 +175,12 @@ public class GiveMeMoreFPS : MonoBehaviour
             }
         }
 
+        #endif // UNITY_ANDROID
+
         if( Application.platform == RuntimePlatform.Android ) //! HZ
         {
+            #if ( UNITY_ANDROID && !UNITY_EDITOR )
+        
             if( Oculus.Performance.TryGetDisplayRefreshRate( out float rate ) )
             {
                 if( rate != DisplayFrequency )
@@ -180,11 +193,18 @@ public class GiveMeMoreFPS : MonoBehaviour
                         Debug.LogWarning($"failed to set freq to {DisplayFrequency.ToString("N1")} current {rate.ToString("N1")}");
                         DisplayFrequency = rate;
                     }
+                    else 
+                    {
+                        // if( Oculus.Performance.TryGetDisplayRefreshRate( out float rateNew ) )    
+                        //     Debug.Log("DisplayRefreshRate set = " + rateNew.ToString("N1") );
+                        // else 
+                            Debug.Log("DisplayRefreshRate set = " + DisplayFrequency.ToString("N1") );
+                    }
 
-                    else if( Oculus.Performance.TryGetDisplayRefreshRate( out float rateNew ) )    
-                        Debug.Log("DisplayRefreshRate set = " + rateNew.ToString("N1") );
                 } 
             }
+            
+            #endif // UNITY_ANDROID
         }
         else 
         {
@@ -195,6 +215,7 @@ public class GiveMeMoreFPS : MonoBehaviour
             }
         }
 
+        #if ( UNITY_ANDROID && !UNITY_EDITOR )
 
         if( Application.platform == RuntimePlatform.Android ) //! ASW
         {
@@ -205,6 +226,12 @@ public class GiveMeMoreFPS : MonoBehaviour
                 // OculusXRPlugin.SetSpaceWarp( spaceWrapState ? OVRPlugin.Bool.True : OVRPlugin.Bool.False );
                 // OVRManager.SetSpaceWarp( spaceWrapState );
                 Debug.Log("SpaceWrap set = " + ( spaceWrap ? "T" : "F" ) );
+
+                Debug.Log("Current camera depth texture mode: " + mainCamera.depthTextureMode );
+
+                mainCamera.depthTextureMode = spaceWrap ? dpethOriginal | MotionVectors : dpethOriginal;
+
+                Debug.Log("New camera depth texture mode: " + mainCamera.depthTextureMode );
             }
         }
 

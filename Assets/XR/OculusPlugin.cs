@@ -16,8 +16,7 @@ public static class OculusPlugin
 
         return true;
     }
-
-
+    
     public enum FFR { Off = 0, Low = 1, Medium = 2, High = 3, HighTop = 4, EnumSize = 0x7FFFFFFF }
 
     static bool ffrSupprted => 0 == DLL.ovrp_GetTiledMultiResSupported( out int supprted ) ? supprted == 1 : false;
