@@ -5,6 +5,10 @@ Project is preconfigured with ASW for the Oculus Quest 1 &amp; 2 using a custom 
 
 ![screenshot](https://raw.githubusercontent.com/nukadelic/unity-application-spacewarp/master/Img/screenshot.png)
 
+### APK File 
+
+Try the build : https://github.com/nukadelic/unity-application-spacewarp/releases/tag/apk
+
 ### Installation
 
 Make sure you have Unity 2020.3.22 installed or newer , in this case im using the latest LTS version of the editor which is **2020.3.25** if you wish to download the exact project version to be sure all the versions exactly match , open in new tab the following : `unityhub://2020.3.25f1/9b9180224418` this should launch unity hub with a new editor installation or go to [Unity Archive](https://unity3d.com/get-unity/download/archive) and search for 2020.3.25f1 and make sure to install **Android Build Support**
