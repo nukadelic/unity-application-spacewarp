@@ -21,7 +21,7 @@ Done, now build and install the apk.
 
 **Notes** 
 * 120Hz is still in experimental stage , to get it working enable it inside the Quest headset in the settings under experimental features. 
-* Unsupported materials will result in tear , make sure to edit your shaders to support motion vectors or make them in shader graph.
+* Making materials in shader graph will support MotionVectors by default, custom hlsl shaders needs to be edited manually othewise they will jitter when in motion.
 * [Fixed](https://github.com/Oculus-VR/Unity-Graphics/issues/3) <s>Lit shaders will cause wild tearing ( see below ) </s>
 
 ### Config 
