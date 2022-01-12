@@ -2300,40 +2300,15 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 807384849247993897, guid: e16c0b52c4c001848bdfd5e99fba134f, type: 3}
-      propertyPath: data
-      value: 95
-      objectReference: {fileID: 0}
-    - target: {fileID: 807384849247993897, guid: e16c0b52c4c001848bdfd5e99fba134f, type: 3}
-      propertyPath: label
-      value: .95
-      objectReference: {fileID: 0}
-    - target: {fileID: 4481712695370319254, guid: e16c0b52c4c001848bdfd5e99fba134f, type: 3}
-      propertyPath: m_text
-      value: .95
-      objectReference: {fileID: 0}
-    - target: {fileID: 5528996642539326256, guid: e16c0b52c4c001848bdfd5e99fba134f, type: 3}
-      propertyPath: m_text
-      value: .99
-      objectReference: {fileID: 0}
     - target: {fileID: 7321083940119540832, guid: e16c0b52c4c001848bdfd5e99fba134f, type: 3}
       propertyPath: mainCamera
       value: 
       objectReference: {fileID: 1546405848}
-    - target: {fileID: 8772067501866471055, guid: e16c0b52c4c001848bdfd5e99fba134f, type: 3}
-      propertyPath: data
-      value: 99
-      objectReference: {fileID: 0}
-    - target: {fileID: 8772067501866471055, guid: e16c0b52c4c001848bdfd5e99fba134f, type: 3}
-      propertyPath: label
-      value: .99
-      objectReference: {fileID: 0}
     - target: {fileID: 9058314106639359367, guid: e16c0b52c4c001848bdfd5e99fba134f, type: 3}
       propertyPath: m_Name
       value: Give Me More FPS
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 4683170571429562617, guid: e16c0b52c4c001848bdfd5e99fba134f, type: 3}
+    m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e16c0b52c4c001848bdfd5e99fba134f, type: 3}
 --- !u!1001 &7028946313174488637
 PrefabInstance:

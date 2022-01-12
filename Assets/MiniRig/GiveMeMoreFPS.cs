@@ -2,17 +2,10 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.XR;
-#if UNITY_ANDROID
-using Oculus = Unity.XR.Oculus;
-#endif
 using System.Collections.Generic;
 using URP = UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
-
-#if !(UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN || (UNITY_ANDROID && !UNITY_EDITOR))
-#define OCULUS_UNSUPPORTED
-#endif
 
 public class GiveMeMoreFPS : MonoBehaviour
 {
@@ -102,16 +95,14 @@ public class GiveMeMoreFPS : MonoBehaviour
 
         // Quest values 
 
-        #if UNITY_ANDROID
-        if( Application.platform == RuntimePlatform.Android )
+        if( OculusNative.IsSupported )
         {
-            FoveationLevel = Oculus.Utils.GetFoveationLevel();
-            if( Oculus.Performance.TryGetDisplayRefreshRate( out float rate ) )
-                DisplayFrequency = rate;
+            if( OculusNative.TryGetFFR( out OculusNative.FFR ffr ) )
+                FoveationLevel = ( int ) ffr;
+
+            if( Unity.XR.Oculus.Performance.TryGetDisplayRefreshRate( out float rate ) )
+                    DisplayFrequency = rate;
         }
-        #endif
-
-
     }
 
     int cooldown = 0;
@@ -120,7 +111,7 @@ public class GiveMeMoreFPS : MonoBehaviour
     {
         if( cooldown-- > 0 ) return; cooldown = 10; // run update once per 10 frames 
 
-        if( renderViewportScale != XRSettings.renderViewportScale )
+        if( renderViewportScale != XRSettings.renderViewportScale ) //! RVP
         {
             Debug.Log($"Render View Port Scale: {XRSettings.renderViewportScale:N3} -> {renderViewportScale:N3}");
             XRSettings.renderViewportScale = renderViewportScale;
@@ -135,35 +126,33 @@ public class GiveMeMoreFPS : MonoBehaviour
         //     Debug.Log("FOV Zoom Factor set = " + fovZoomFactor.ToString("N2") );
         // }
 
-        if( XRSettings.eyeTextureResolutionScale != resolutionScale )
+        if( XRSettings.eyeTextureResolutionScale != resolutionScale ) //! RES 
         {
             XRSettings.eyeTextureResolutionScale = resolutionScale;
             AssetURP.renderScale = resolutionScale;
             Debug.Log("Resolution Scale set = " + AssetURP.renderScale.ToString("N2") );
         }
 
-        if( (int) MSAA != AssetURP.msaaSampleCount )
+        if( (int) MSAA != AssetURP.msaaSampleCount ) //! MSSA
         {
             AssetURP.msaaSampleCount = (int) MSAA;
             Debug.Log("MSAA set = " + (MsaaQuality) AssetURP.msaaSampleCount );
         }
 
-        #if ( UNITY_ANDROID && !UNITY_EDITOR )
-
-        if( Application.platform == RuntimePlatform.Android ) //! FFR
+        if( OculusNative.IsSupported ) //! FFR
         {
-            var currentFFR = ( OculusPlugin.FFR ) FoveationLevel;   
+            var currentFFR = ( OculusNative.FFR ) FoveationLevel;   
 
-            if( OculusPlugin.TryGetFFR( out OculusPlugin.FFR ffr1 ) && ffr1 != currentFFR )
+            if( OculusNative.TryGetFFR( out OculusNative.FFR ffr1 ) && ffr1 != currentFFR )
             {
                 // this doesn't work .. 
                 // Unity.XR.Oculus.Utils.EnableDynamicFFR(FoveationLevel > 0);
                 // Unity.XR.Oculus.Utils.SetFoveationLevel(FoveationLevel);
                 // Debug.Log("GetFoveationLevel set = " + Unity.XR.Oculus.Utils.GetFoveationLevel() );
 
-                if( OculusPlugin.TrySetFFR( ( OculusPlugin.FFR ) FoveationLevel ) )
+                if( OculusNative.TrySetFFR( ( OculusNative.FFR ) FoveationLevel ) )
                 {
-                    if( OculusPlugin.TryGetFFR( out OculusPlugin.FFR ffr2 ) )
+                    if( OculusNative.TryGetFFR( out OculusNative.FFR ffr2 ) )
                     {
                         Debug.Log("GetFoveationLevel set = " + ffr2 );
                     }
@@ -175,20 +164,17 @@ public class GiveMeMoreFPS : MonoBehaviour
             }
         }
 
-        #endif // UNITY_ANDROID
 
-        if( Application.platform == RuntimePlatform.Android ) //! HZ
+        if( OculusNative.IsSupported ) //! HZ
         {
-            #if ( UNITY_ANDROID && !UNITY_EDITOR )
-        
-            if( Oculus.Performance.TryGetDisplayRefreshRate( out float rate ) )
+            if( Unity.XR.Oculus.Performance.TryGetDisplayRefreshRate( out float rate ) )
             {
                 if( rate != DisplayFrequency )
                 {
-                    if( Oculus.Performance.TryGetAvailableDisplayRefreshRates( out float[] rates ) )
+                    if( Unity.XR.Oculus.Performance.TryGetAvailableDisplayRefreshRates( out float[] rates ) )
                         Debug.Log("Available refresh rates: " + string.Join( ", " , rates ) );
 
-                    if( ! Oculus.Performance.TrySetDisplayRefreshRate( DisplayFrequency ) )
+                    if( ! Unity.XR.Oculus.Performance.TrySetDisplayRefreshRate( DisplayFrequency ) )
                     {
                         Debug.LogWarning($"failed to set freq to {DisplayFrequency.ToString("N1")} current {rate.ToString("N1")}");
                         DisplayFrequency = rate;
@@ -203,10 +189,8 @@ public class GiveMeMoreFPS : MonoBehaviour
 
                 } 
             }
-            
-            #endif // UNITY_ANDROID
         }
-        else 
+        else //! FPS
         {
             if( Application.targetFrameRate != (int) DisplayFrequency )
             {
@@ -215,17 +199,15 @@ public class GiveMeMoreFPS : MonoBehaviour
             }
         }
 
-        #if ( UNITY_ANDROID && !UNITY_EDITOR )
-
-        if( Application.platform == RuntimePlatform.Android ) //! ASW
+        if( OculusNative.IsSupported ) //! ASW
         {
             if( spaceWrap != spaceWrapState )
             {
                 spaceWrapState = spaceWrap;
-                OculusPlugin.SetSpaceWrap( spaceWrapState );
+                OculusNative.SetSpaceWrap( spaceWrapState );
                 // OculusXRPlugin.SetSpaceWarp( spaceWrapState ? OVRPlugin.Bool.True : OVRPlugin.Bool.False );
                 // OVRManager.SetSpaceWarp( spaceWrapState );
-                Debug.Log("SpaceWrap set = " + ( spaceWrap ? "T" : "F" ) );
+                Debug.Log("SpaceWrap set = " + ( spaceWrapState ? "T" : "F" ) );
 
                 Debug.Log("Current camera depth texture mode: " + mainCamera.depthTextureMode );
 
@@ -234,8 +216,6 @@ public class GiveMeMoreFPS : MonoBehaviour
                 Debug.Log("New camera depth texture mode: " + mainCamera.depthTextureMode );
             }
         }
-
-        #endif // UNITY_ANDROID
     }
 
     float fps_time = 0;
@@ -258,6 +238,8 @@ public class GiveMeMoreFPS : MonoBehaviour
             fps_time = fps_count = 0;
         }
 
-        fpsLabel.text = fps_value.ToString("N1") + " FPS     " + ( (int) ( dt * 1000 ) ) + " ms";
+        fpsLabel.text = fps_value.ToString("N1") + " FPS"
+            + "\n" + ( spaceWrap ? fps_value * 2 : fps_value ).ToString("N0") + " Hz"
+            + "\n" + ( (int) ( dt * 1000 ) ) + " ms";
     }
 }
