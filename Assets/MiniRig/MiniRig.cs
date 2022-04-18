@@ -15,9 +15,9 @@ public class MiniRig : MonoBehaviour
         if( ! Application.isPlaying ) return;
 
         if( subsystems.Count == 0 ) SubsystemManager.GetInstances( subsystems );
+        if( subsystems.Count == 0 || subsystems[ 0 ] == null ) return;
+
         var first_subsystem = subsystems[ 0 ];
-        
-        if( subsystems.Count == 0 || first_subsystem == null ) return;
 
         // This check below is only needed when the app is existing , when removed there 
         // will be a null reference error - doesn't seem like its needed but its here 

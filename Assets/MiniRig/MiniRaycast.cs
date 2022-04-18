@@ -20,7 +20,7 @@ public class MiniRaycast : MonoBehaviour
     bool triggerPressed = false;
     MiniButton lastButton;
 
-    int waitFrames = 0;
+    float idle = 0;
 
     void Update()
     {
@@ -32,7 +32,7 @@ public class MiniRaycast : MonoBehaviour
         }
 
         // press cooldown 
-        if( waitFrames-- > 0 ) return;
+        if( ( idle -= Time.deltaTime ) > 0 ) return;
 
         // raycast for colliders 
         RaycastHit[] hits = new RaycastHit[ 1 ];
@@ -46,9 +46,11 @@ public class MiniRaycast : MonoBehaviour
 
         if( triggerPressed )
         {
+            Debug.Log("press : " + button.label + " " + button.valueStr + ":" + button.valueInt );
+
             triggerPressed = false;
-            button.OnPress.Invoke( button ); // invoke event 
-            waitFrames = 20;
+            button.Press();         // invoke event 
+            idle = 0.2f;            // 200 ms
         }
         else button.SetColor( Color.blue ); // focus 
 

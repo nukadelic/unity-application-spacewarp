@@ -24,8 +24,8 @@ public class GiveMeMoreFPS : MonoBehaviour
     // Read more at : https://developer.oculus.com/documentation/unity/unity-fixed-foveated-rendering/
     [Range(0,4)] int FoveationLevel = 0;
     [Range(0.2f,1f)] float resolutionScale = 1f;
-    float DisplayFrequency = 72;
-    bool spaceWrap = false;
+    float DisplayFrequency = 120;
+    bool spaceWrap = true;
     MsaaQuality MSAA; // 1,2,4,8
     float renderViewportScale;
     // [Range(0,4)] float fovZoomFactor;
@@ -33,6 +33,10 @@ public class GiveMeMoreFPS : MonoBehaviour
     URP AssetURP => (URP) GraphicsSettings.currentRenderPipeline ;
     DepthTextureMode dpethOriginal;
     const DepthTextureMode MotionVectors = DepthTextureMode.MotionVectors | DepthTextureMode.Depth;
+    
+    bool toggleMotionVectors = false;
+    bool tooglePostProcessing = false;
+    bool toggleShadows = false;
 
 
     // Button click event handle 
@@ -40,20 +44,23 @@ public class GiveMeMoreFPS : MonoBehaviour
 
     public void OnButtonPress( MiniButton button )
     {
-        switch( button.type )
+        switch( button.valueStr )
         {
-            case "FFR" : FoveationLevel = button.data;              break;
-            case "RES" : resolutionScale = button.data / 100f;      break;
-            case "HZ"  : DisplayFrequency = button.data;            break;
-            case "ASW" : spaceWrap = ! spaceWrap;                   break;
-            case "MSA" : MSAA = (MsaaQuality) button.data;          break; 
-         // case "FOV" : fovZoomFactor = button.data / 100f;        break;
-            case "RVP" : renderViewportScale = button.data / 100f;  break;
+            case "FFR" : FoveationLevel = button.valueInt;              break;
+            case "RES" : resolutionScale = button.valueInt / 100f;      break;
+            case "HZ"  : DisplayFrequency = button.valueInt;            break;
+            case "ASW" : spaceWrap = ! spaceWrap;                       break;
+            case "MSA" : MSAA = (MsaaQuality) button.valueInt;          break; 
+            // case "FOV" : fovZoomFactor = button.data / 100f;        break;
+            case "RVP" : renderViewportScale = button.valueInt / 100f;  break;
+            case "TMV" : toggleMotionVectors = true;                    break;
+            case "TPP" : tooglePostProcessing = true;                   break;
+            case "TSD" : toggleShadows = true;                          break;
         }
 
         if( Application.platform != RuntimePlatform.Android )
         {
-            switch( button.type )
+            switch( button.valueStr )
             {
                 case "FFR" : case "ASW" : 
                 Debug.LogWarning("Operation only supported on android devices");
@@ -82,7 +89,7 @@ public class GiveMeMoreFPS : MonoBehaviour
 
     void Start()
     {
-        Debug.Log("V 1.0.1");
+        Debug.Log("Build : URP v12 - April 18 , 2022");
 
         // Get default values 
         
@@ -215,6 +222,37 @@ public class GiveMeMoreFPS : MonoBehaviour
 
                 Debug.Log("New camera depth texture mode: " + mainCamera.depthTextureMode );
             }
+        }
+
+        if( toggleMotionVectors ) //! TMV
+        {
+            toggleMotionVectors = false;
+
+            mainCamera.depthTextureMode = mainCamera.depthTextureMode == dpethOriginal ? dpethOriginal | MotionVectors : dpethOriginal ;
+
+            Debug.Log("Camera depth texture mode set to : " + mainCamera.depthTextureMode);
+        }
+
+        if( tooglePostProcessing ) //! TPP
+        {
+            tooglePostProcessing = false;
+
+            var camera_data = mainCamera.GetUniversalAdditionalCameraData();
+
+            camera_data.renderPostProcessing = ! camera_data.renderPostProcessing;
+
+            Debug.Log("Camera post processing set to : " + camera_data.renderPostProcessing );
+        }
+
+        if( toggleShadows ) //! TSD
+        {
+            toggleShadows = false;
+
+            var camera_data = mainCamera.GetUniversalAdditionalCameraData();
+            
+            camera_data.renderShadows = ! camera_data.renderShadows;
+
+            Debug.Log("Camera render shadows set to : " + camera_data.renderShadows );
         }
     }
 

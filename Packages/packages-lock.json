@@ -9,6 +9,15 @@
       },
       "hash": "301eab459c84a4163179777329786a93121c8a5c"
     },
+    "com.unity.burst": {
+      "version": "1.6.5",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.mathematics": "1.2.1"
+      },
+      "url": "https://packages.unity.com"
+    },
     "com.unity.collab-proxy": {
       "version": "1.15.4",
       "depth": 0,
@@ -61,7 +70,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.mathematics": {
-      "version": "1.1.0",
+      "version": "1.2.5",
       "depth": 1,
       "source": "registry",
       "dependencies": {},
@@ -75,7 +84,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.render-pipelines.core": {
-      "version": "https://github.com/nukadelic/asw-render-pipelines-core.git",
+      "version": "https://gin.g-node.org/FloppyDisk/asw-render-pipelines-core.git",
       "depth": 0,
       "source": "git",
       "dependencies": {
@@ -83,21 +92,22 @@
         "com.unity.modules.physics": "1.0.0",
         "com.unity.modules.jsonserialize": "1.0.0"
       },
-      "hash": "8043a5ba636acc53a86a0ad32cf1501fe9d4662a"
+      "hash": "66eebe48d90be3ba05aeadda9b91eaad328455ff"
     },
     "com.unity.render-pipelines.universal": {
-      "version": "https://github.com/nukadelic/asw-render-pipelines-universal.git",
+      "version": "https://gin.g-node.org/FloppyDisk/asw-render-pipelines-universal.git",
       "depth": 0,
       "source": "git",
       "dependencies": {
-        "com.unity.mathematics": "1.1.0",
-        "com.unity.render-pipelines.core": "10.8.0",
-        "com.unity.shadergraph": "10.8.0"
+        "com.unity.mathematics": "1.2.1",
+        "com.unity.burst": "1.5.0",
+        "com.unity.render-pipelines.core": "12.1.6",
+        "com.unity.shadergraph": "12.1.6"
       },
-      "hash": "a1048bc34c0a79bda8fce06868023cf4e78c6d82"
+      "hash": "f21c66817f16c326aef8d8cb55e4a9c4ebcaa159"
     },
     "com.unity.searcher": {
-      "version": "4.3.2",
+      "version": "4.9.1",
       "depth": 1,
       "source": "registry",
       "dependencies": {},
@@ -113,20 +123,22 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.shadergraph": {
-      "version": "https://github.com/nukadelic/asw-shader-graph.git",
+      "version": "https://gin.g-node.org/FloppyDisk/asw-shader-graph.git",
       "depth": 0,
       "source": "git",
       "dependencies": {
-        "com.unity.render-pipelines.core": "10.8.0",
-        "com.unity.searcher": "4.3.2"
+        "com.unity.render-pipelines.core": "12.1.6",
+        "com.unity.searcher": "4.9.1"
       },
-      "hash": "565f3bd2f82f31f78a332433deb9790255706e1c"
+      "hash": "292ae099c55faafa5f263906bc2648479c464314"
     },
     "com.unity.subsystemregistration": {
-      "version": "1.0.6",
+      "version": "1.1.0",
       "depth": 1,
       "source": "registry",
-      "dependencies": {},
+      "dependencies": {
+        "com.unity.modules.subsystems": "1.0.0"
+      },
       "url": "https://packages.unity.com"
     },
     "com.unity.test-framework": {
@@ -171,17 +183,17 @@
       }
     },
     "com.unity.visualeffectgraph": {
-      "version": "https://github.com/nukadelic/asw-visual-effect-graph.git",
+      "version": "https://gin.g-node.org/FloppyDisk/asw-visual-effect-graph.git",
       "depth": 0,
       "source": "git",
       "dependencies": {
-        "com.unity.shadergraph": "10.8.0",
-        "com.unity.render-pipelines.core": "10.8.0"
+        "com.unity.shadergraph": "12.1.6",
+        "com.unity.render-pipelines.core": "12.1.6"
       },
-      "hash": "4c7a65edd3f78af8379d4e08bd04139ddeead3cb"
+      "hash": "9c6b3b3c1981721142815c15775805d7381a6c91"
     },
     "com.unity.xr.legacyinputhelpers": {
-      "version": "2.1.8",
+      "version": "2.1.9",
       "depth": 1,
       "source": "registry",
       "dependencies": {
