@@ -38,6 +38,8 @@ public class GiveMeMoreFPS : MonoBehaviour
     bool tooglePostProcessing = false;
     bool toggleShadows = false;
 
+    int AAQuality = 0;
+
 
     // Button click event handle 
 
@@ -51,6 +53,7 @@ public class GiveMeMoreFPS : MonoBehaviour
             case "HZ"  : DisplayFrequency = button.valueInt;            break;
             case "ASW" : spaceWrap = ! spaceWrap;                       break;
             case "MSA" : MSAA = (MsaaQuality) button.valueInt;          break; 
+            case "AAQ" : AAQuality = button.valueInt;                   break;
             // case "FOV" : fovZoomFactor = button.data / 100f;        break;
             case "RVP" : renderViewportScale = button.valueInt / 100f;  break;
             case "TMV" : toggleMotionVectors = true;                    break;
@@ -100,9 +103,13 @@ public class GiveMeMoreFPS : MonoBehaviour
         // cam = Camera.main; if( cam ) cam.stereoTargetEye = StereoTargetEyeMask.None;
         MSAA = (MsaaQuality) AssetURP.msaaSampleCount;
 
+        var CD = mainCamera.GetUniversalAdditionalCameraData();
+
+        AAQuality = ( (int) CD.antialiasing) * 10 + ( (int) CD.antialiasingQuality );
+
         // Quest values 
 
-        if( OculusNative.IsSupported )
+        if ( OculusNative.IsSupported )
         {
             if( OculusNative.TryGetFFR( out OculusNative.FFR ffr ) )
                 FoveationLevel = ( int ) ffr;
@@ -233,11 +240,11 @@ public class GiveMeMoreFPS : MonoBehaviour
             Debug.Log("Camera depth texture mode set to : " + mainCamera.depthTextureMode);
         }
 
-        if( tooglePostProcessing ) //! TPP
+        var camera_data = mainCamera.GetUniversalAdditionalCameraData();
+
+        if ( tooglePostProcessing ) //! TPP
         {
             tooglePostProcessing = false;
-
-            var camera_data = mainCamera.GetUniversalAdditionalCameraData();
 
             camera_data.renderPostProcessing = ! camera_data.renderPostProcessing;
 
@@ -248,12 +255,27 @@ public class GiveMeMoreFPS : MonoBehaviour
         {
             toggleShadows = false;
 
-            var camera_data = mainCamera.GetUniversalAdditionalCameraData();
-            
             camera_data.renderShadows = ! camera_data.renderShadows;
 
             Debug.Log("Camera render shadows set to : " + camera_data.renderShadows );
         }
+
+        //! AAQ
+
+        var current_AA_m = ( (int) camera_data.antialiasing ) * 10 ;
+        var current_AA_q = (int) camera_data.antialiasingQuality;
+
+        var new_AA_m = Mathf.FloorToInt( AAQuality / 10f ) * 10;
+        var new_AA_q = ( AAQuality - new_AA_m );
+
+        if ( current_AA_m != new_AA_m || ( new_AA_m == 20 && current_AA_q != new_AA_q ) ) 
+        {
+            camera_data.antialiasingQuality = ( AntialiasingQuality ) new_AA_q ;
+            camera_data.antialiasing = ( AntialiasingMode ) ( new_AA_m / 10 );
+
+            Debug.Log($"New AA : {camera_data.antialiasing} {camera_data.antialiasingQuality}"); // [{current_AA_m},{current_AA_q}/{new_AA_m},{new_AA_q}]");
+        }
+
     }
 
     float fps_time = 0;

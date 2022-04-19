@@ -46,7 +46,7 @@ public class MiniRaycast : MonoBehaviour
 
         if( triggerPressed )
         {
-            Debug.Log("press : " + button.label + " " + button.valueStr + ":" + button.valueInt );
+            // Debug.Log("[Event:ButtonClick] " + button.label + ", " + button.valueStr + ", " + button.valueInt );
 
             triggerPressed = false;
             button.Press();         // invoke event 
