@@ -5,11 +5,15 @@ Project is preconfigured with ASW for the Oculus Quest 1 &amp; 2 using a custom 
 
 ![screenshot](https://raw.githubusercontent.com/nukadelic/unity-application-spacewarp/master/Img/screenshot.png)
 
-### Update
+### Update (Apr-2022)
 
 Updated to latest commit [30e14a2](https://github.com/Oculus-VR/Unity-Graphics/tree/30e14a2ca18f7c4c9903767895c1ca15d1af6c76)
 
 Unity version 2021.2+ URPv12 
+
+### Update (Jul-2022)
+
+Added sample hlsl shader , see : Assets/Shaders/UnlitTemplate.shader
 
 ### APK File 
 
