@@ -7,9 +7,9 @@ Project is preconfigured with ASW for the Oculus Quest 1 &amp; 2 using a custom 
 
 ### Update (Apr-2022)
 
-Updated to latest commit [30e14a2](https://github.com/Oculus-VR/Unity-Graphics/tree/30e14a2ca18f7c4c9903767895c1ca15d1af6c76)
+Updated to latest commit [30e14a2](https://github.com/Oculus-VR/Unity-Graphics/tree/30e14a2ca18f7c4c9903767895c1ca15d1af6c76[)
 
-Unity version 2021.2+ URPv12 
+Unity version 2021.2+ [URPv12](https://github.com/Oculus-VR/Unity-Graphics/commit/4f6daf0a988e86df35739c5fddbf6fe9bf9bb773)
 
 ### Update (Jul-2022)
 
