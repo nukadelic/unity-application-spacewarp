@@ -44,6 +44,7 @@ For faster builds you can swap to the Mono Scripting backend in `Project Setting
 
 * ASW Developer Guide : https://developer.oculus.com/documentation/unity/unity-asw
 * Video Lecture [Asynchronous Timewarp & Spacewarp for VR | Bonnie Mathew 2017](https://www.youtube.com/watch?v=gqVIJtRjtr8)
+* [how to diagnose and fix common issues with ASW-enabled apps](https://github.com/oculus-samples/Unity-AppSpaceWarp)
 
 ### Donate 
 
