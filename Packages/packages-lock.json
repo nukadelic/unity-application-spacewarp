@@ -1,14 +1,5 @@
 {
   "dependencies": {
-    "com.koochyrat.openxrfrustumadjust": {
-      "version": "https://github.com/nukadelic/OpenXRFrustumAdjust.git",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {
-        "com.unity.xr.openxr": "1.3.0"
-      },
-      "hash": "301eab459c84a4163179777329786a93121c8a5c"
-    },
     "com.unity.burst": {
       "version": "1.6.5",
       "depth": 1,
@@ -104,7 +95,7 @@
         "com.unity.render-pipelines.core": "12.1.6",
         "com.unity.shadergraph": "12.1.6"
       },
-      "hash": "f21c66817f16c326aef8d8cb55e4a9c4ebcaa159"
+      "hash": "5172fbb6fd331be41c2bbf493a23381ce815d770"
     },
     "com.unity.searcher": {
       "version": "4.9.1",
