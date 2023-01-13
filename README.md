@@ -5,6 +5,11 @@ Project is preconfigured with ASW for the Oculus Quest 1 &amp; 2 using a custom 
 
 ![screenshot](https://raw.githubusercontent.com/nukadelic/unity-application-spacewarp/master/Img/screenshot.png)
 
+### Update (Jan-2023)
+
++ Patch Alpha Clipping Issue [42dbf6a](https://gin.g-node.org/FloppyDisk/asw-render-pipelines-universal/commit/42dbf6a25b33099b1249bcd03ccffc223224818e)
++ Patch Allow Material Override in shader graph [5a42db6](https://gin.g-node.org/FloppyDisk/asw-render-pipelines-universal/commit/5a42db665706440403125170c379deb6b998aff5)
+
 ### Update (Apr-2022)
 
 Updated to latest commit [30e14a2](https://github.com/Oculus-VR/Unity-Graphics/tree/30e14a2ca18f7c4c9903767895c1ca15d1af6c76)
