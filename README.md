@@ -6,6 +6,11 @@ Project is preconfigured with ASW for the Oculus Quest 1 &amp; 2 using a custom 
 
 ![screenshot](https://raw.githubusercontent.com/nukadelic/unity-application-spacewarp/master/Img/screenshot.png)
 
+### Update (April-2023)
+
++ Bump minimum required version to 2021.3.21 ( thank you [tswierkot](https://github.com/tswierkot) - his [fork](https://github.com/tswierkot/unity-application-spacewarp/tree/2021.3.21) )
++ Post processing now running at 60fps & 120Hz at Max-Foveation level & 75% render resolution fairly stable 
+
 ### Update (Jan-2023)
 
 + Patch Alpha Clipping Issue [42dbf6a](https://gin.g-node.org/FloppyDisk/asw-render-pipelines-universal/commit/42dbf6a25b33099b1249bcd03ccffc223224818e)
