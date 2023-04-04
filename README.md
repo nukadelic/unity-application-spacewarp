@@ -2,9 +2,12 @@ Feed me a beer (૭ ◉༬◉)૭⁾⁾⁾⁾ [![Donate](https://img.shields.io/
   
 # Application Spacewarp Template Project
   
-Project is preconfigured with ASW for the Oculus Quest 1 &amp; 2 using a custom render pipeline 
-
-![screenshot](https://raw.githubusercontent.com/nukadelic/unity-application-spacewarp/master/Img/screenshot.png)
+Project is preconfigured with ASW for the Oculus Quest 1 &amp; 2 using a custom render pipeline  
+  
+> ⚠ If you having trouble with dependencies on a freshly cloned project , make sure the editor have your account signed in so the package manager can download the dependencies , if you still can't open then : enter safe mode -> exit safe -> re import all assets .  
+> * Starting from Jul-2023 the oculus store apk's must target Android 12L 
+  
+![screenshot](https://raw.githubusercontent.com/nukadelic/unity-application-spacewarp/master/Img/screenshot.png)  
 
 ### Update (April-2023)
 
@@ -43,7 +46,7 @@ Try the build : https://github.com/nukadelic/unity-application-spacewarp/release
 * Shader graph seems to be working as expected 
 * Additional Project settings 
   * Linear , Vulkan 
-  * Android 8.0 'Oreo' ( API Level 26 ) 
+  * Android 12L ( API Level 31 ) 
   * IL2CPP , .NET 4.x  
   * Texture Compression : ASTC 
 
