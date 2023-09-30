@@ -14,7 +14,7 @@ public class MiniRig : MonoBehaviour
     {        
         if( ! Application.isPlaying ) return;
 
-        if( subsystems.Count == 0 ) SubsystemManager.GetInstances( subsystems );
+        if( subsystems.Count == 0 ) SubsystemManager.GetSubsystems( subsystems );
         if( subsystems.Count == 0 || subsystems[ 0 ] == null ) return;
 
         var first_subsystem = subsystems[ 0 ];
