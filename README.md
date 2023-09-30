@@ -1,5 +1,9 @@
 Feed me a beer (૭ ◉༬◉)૭⁾⁾⁾⁾ [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.me/wad1m)
-  
+
+# ⚠ 2023.2 - Beta ( URP v 16.0.3 ) ⚠
+
+> Unity Editor version 2023.2 Beta ( tested on 0b10 )
+
 # Application Spacewarp Template Project
   
 Project is preconfigured with ASW for the Oculus Quest 1 &amp; 2 using a custom render pipeline  
