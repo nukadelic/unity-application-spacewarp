@@ -12,6 +12,7 @@
 #define UNITY_MATRIX_P     OptimizeProjectionMatrix(glstate_matrix_projection)
 #define UNITY_MATRIX_I_P   _InvProjMatrix
 #define UNITY_MATRIX_VP    unity_MatrixVP
+#define UNITY_MATRIX_PREV_VP    unity_MatrixPrevVP
 #define UNITY_MATRIX_I_VP  _InvViewProjMatrix
 #define UNITY_MATRIX_MV    mul(UNITY_MATRIX_V, UNITY_MATRIX_M)
 #define UNITY_MATRIX_T_MV  transpose(UNITY_MATRIX_MV)

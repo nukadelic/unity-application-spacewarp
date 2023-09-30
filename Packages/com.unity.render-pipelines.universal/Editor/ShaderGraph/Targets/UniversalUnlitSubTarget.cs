@@ -192,6 +192,7 @@ namespace UnityEditor.Rendering.Universal.ShaderGraph
                 // UI shaders to render correctly. Verify [1352225] before changing this order.
                 result.passes.Add(PassVariant(CorePasses.SceneSelection(target), CorePragmas.Default));
                 result.passes.Add(PassVariant(CorePasses.ScenePicking(target), CorePragmas.Default));
+                result.passes.Add(PassVariant(CorePasses.MotionVectors(target), CorePragmas.Default));
 
                 return result;
             }

@@ -1105,7 +1105,8 @@ namespace UnityEditor.Rendering.Universal.ShaderGraph
             return result;
         }
 
-        public static PassDescriptor MotionVectors(UniversalTarget target)
+        
+        public static PassDescriptor MotionVectors_Unity(UniversalTarget target)
         {
             var result = new PassDescriptor()
             {
@@ -1133,7 +1134,7 @@ namespace UnityEditor.Rendering.Universal.ShaderGraph
                 pragmas = CorePragmas.MotionVectors,
                 defines = new DefineCollection(),
                 keywords = new KeywordCollection(),
-                includes = CoreIncludes.MotionVectors,
+                includes = CoreIncludes.MotionVectors_Unity,
 
                 // Custom Interpolator Support
                 customInterpolators = CoreCustomInterpDescriptors.Common
@@ -1147,6 +1148,45 @@ namespace UnityEditor.Rendering.Universal.ShaderGraph
 
             AddAlphaClipControlToPass(ref result, target);
             AddLODCrossFadeControlToPass(ref result, target);
+
+            return result;
+        }
+        
+
+        public static PassDescriptor MotionVectors(UniversalTarget target)
+        {
+            Debug.Log("Motion Vectors Pass Desc");
+
+            var result = new PassDescriptor()
+            {
+                // Definition
+                displayName = "MotionVectors",
+                referenceName = "SHADERPASS_MOTIONVECTORS",
+                lightMode = "MotionVectors",
+                useInPreview = false,
+
+                // Template
+                passTemplatePath = GenerationUtils.GetDefaultTemplatePath("PassMesh.template"),
+                sharedTemplateDirectories = GenerationUtils.GetDefaultSharedTemplateDirectories(),
+
+                // Port Mask
+                validVertexBlocks = CoreBlockMasks.Vertex,
+                validPixelBlocks = CoreBlockMasks.FragmentAlphaOnly,
+
+                // Fields
+                structs = CoreStructCollections.Default,
+                requiredFields = CoreRequiredFields.MotionVectors,
+                fieldDependencies = CoreFieldDependencies.Default,
+
+                // Conditional State
+                renderStates = CoreRenderStates.MotionVector(target),
+                pragmas = CorePragmas.Instanced,
+                includes = CoreIncludes.MotionVectors,
+                defines = new DefineCollection(),
+                keywords = new KeywordCollection(),
+            };
+
+            AddAlphaClipControlToPass(ref result, target);
 
             return result;
         }
@@ -1376,6 +1416,13 @@ namespace UnityEditor.Rendering.Universal.ShaderGraph
             StructFields.Attributes.uv1,                            // needed for meta vertex position
             StructFields.Varyings.normalWS,
             StructFields.Varyings.tangentWS,                        // needed for vertex lighting
+        };
+        
+        public static readonly FieldCollection MotionVectors = new FieldCollection()
+        {
+            StructFields.Attributes.uv4,                   // needed for previousPositionOS
+            UniversalStructFields.Varyings.curPositionCS,
+            UniversalStructFields.Varyings.prevPositionCS,
         };
     }
     #endregion
@@ -1662,6 +1709,7 @@ namespace UnityEditor.Rendering.Universal.ShaderGraph
         const string kDBuffer = "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DBuffer.hlsl";
         const string kSelectionPickingPass = "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/SelectionPickingPass.hlsl";
         const string kLODCrossFade = "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl";
+        const string kMotionVectors = "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/OculusMotionVectors.hlsl";
 
         // Files that are included with #include_with_pragmas
         const string kDOTS = "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DOTS.hlsl";
@@ -1729,7 +1777,7 @@ namespace UnityEditor.Rendering.Universal.ShaderGraph
             { kDepthNormalsOnlyPass, IncludeLocation.Postgraph },
         };
 
-        public static readonly IncludeCollection MotionVectors = new IncludeCollection
+        public static readonly IncludeCollection MotionVectors_Unity = new IncludeCollection
         {
             // Pre-graph
             { DOTSPregraph },
@@ -1740,6 +1788,17 @@ namespace UnityEditor.Rendering.Universal.ShaderGraph
             //Post-graph
             { CorePostgraph },
             { kMotionVectorPass, IncludeLocation.Postgraph },
+        };
+
+        public static readonly IncludeCollection MotionVectors = new IncludeCollection
+        {
+            // Pre-graph
+            { CoreIncludes.CorePregraph },
+            { CoreIncludes.ShaderGraphPregraph },
+
+            // Post-graph
+            { CoreIncludes.CorePostgraph },
+            { kMotionVectors, IncludeLocation.Postgraph },
         };
 
         public static readonly IncludeCollection ShadowCaster = new IncludeCollection
@@ -1785,6 +1844,7 @@ namespace UnityEditor.Rendering.Universal.ShaderGraph
         {
             { kLODCrossFade, IncludeLocation.Pregraph }
         };
+
     }
     #endregion
 

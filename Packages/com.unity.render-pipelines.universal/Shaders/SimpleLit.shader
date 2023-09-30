@@ -421,6 +421,24 @@ Shader "Universal Render Pipeline/Simple Lit"
         Pass
         {
             Name "MotionVectors"
+            Tags{ "LightMode" = "MotionVectors"}
+            Tags { "RenderType" = "Opaque" }
+
+            ZWrite[_ZWrite]
+            Cull[_Cull]
+
+            HLSLPROGRAM
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/OculusMotionVectorCore.hlsl"
+
+            #pragma vertex vert
+            #pragma fragment frag
+
+            ENDHLSL
+        }
+        /*
+        Pass
+        {
+            Name "MotionVectors"
             Tags { "LightMode" = "MotionVectors" }
             ColorMask RG
 
@@ -433,6 +451,7 @@ Shader "Universal Render Pipeline/Simple Lit"
             #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ObjectMotionVectors.hlsl"
             ENDHLSL
         }
+        */
     }
 
     Fallback  "Hidden/Universal Render Pipeline/FallbackError"

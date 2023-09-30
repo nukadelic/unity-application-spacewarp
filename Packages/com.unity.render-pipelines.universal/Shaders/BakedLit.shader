@@ -305,6 +305,24 @@ Shader "Universal Render Pipeline/Baked Lit"
         Pass
         {
             Name "MotionVectors"
+            Tags{ "LightMode" = "MotionVectors"}
+            Tags { "RenderType" = "Opaque" }
+
+            ZWrite[_ZWrite]
+            Cull[_Cull]
+
+            HLSLPROGRAM
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/OculusMotionVectorCore.hlsl"
+
+            #pragma vertex vert
+            #pragma fragment frag
+
+            ENDHLSL
+        }
+        /*
+        Pass
+        {
+            Name "MotionVectors"
             Tags { "LightMode" = "MotionVectors" }
             ColorMask RG
 
@@ -316,7 +334,7 @@ Shader "Universal Render Pipeline/Baked Lit"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/BakedLitInput.hlsl"
             #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ObjectMotionVectors.hlsl"
             ENDHLSL
-        }
+        }*/
     }
 
     FallBack "Universal Render Pipeline/Unlit"

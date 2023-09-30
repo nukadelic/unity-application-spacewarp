@@ -26,6 +26,8 @@ namespace UnityEditor.Rendering.Universal.ShaderGraph
                 UniversalStructFields.Varyings.sh,
                 UniversalStructFields.Varyings.fogFactorAndVertexLight,
                 UniversalStructFields.Varyings.shadowCoord,
+                UniversalStructFields.Varyings.curPositionCS,
+                UniversalStructFields.Varyings.prevPositionCS,
                 StructFields.Varyings.instanceID,
                 UniversalStructFields.Varyings.stereoTargetEyeIndexAsBlendIdx0,
                 UniversalStructFields.Varyings.stereoTargetEyeIndexAsRTArrayIdx,

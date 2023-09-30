@@ -113,6 +113,7 @@ namespace UnityEngine.Rendering.Universal
 #if ENABLE_VR && ENABLE_XR_MODULE
         XROcclusionMeshPass m_XROcclusionMeshPass;
         CopyDepthPass m_XRCopyDepthPass;
+        OculusMotionVectorPass m_OculusMotionVecPass;
 #endif
 #if UNITY_EDITOR
         CopyDepthPass m_FinalDepthCopyPass;
@@ -278,6 +279,7 @@ namespace UnityEngine.Rendering.Universal
                 m_RenderOpaqueForwardOnlyPass = new DrawObjectsPass("Render Opaques Forward Only", forwardOnlyShaderTagIds, true, RenderPassEvent.BeforeRenderingOpaques, RenderQueueRange.opaque, data.opaqueLayerMask, forwardOnlyStencilState, forwardOnlyStencilRef);
             }
 
+            m_OculusMotionVecPass = new OculusMotionVectorPass(URPProfileId.DrawMVOpaqueObjects, true, RenderPassEvent.BeforeRenderingOpaques, RenderQueueRange.opaque, data.opaqueLayerMask, m_DefaultStencilState, stencilData.stencilReference);
             // Always create this pass even in deferred because we use it for wireframe rendering in the Editor or offscreen depth texture rendering.
             m_RenderOpaqueForwardPass = new DrawObjectsPass(URPProfileId.DrawOpaqueObjects, true, RenderPassEvent.BeforeRenderingOpaques, RenderQueueRange.opaque, data.opaqueLayerMask, m_DefaultStencilState, stencilData.stencilReference);
             m_RenderOpaqueForwardWithRenderingLayersPass = new DrawObjectsWithRenderingLayersPass(URPProfileId.DrawOpaqueObjects, true, RenderPassEvent.BeforeRenderingOpaques, RenderQueueRange.opaque, data.opaqueLayerMask, m_DefaultStencilState, stencilData.stencilReference);
@@ -1040,6 +1042,19 @@ namespace UnityEngine.Rendering.Universal
 #if ENABLE_VR && ENABLE_XR_MODULE
             if (cameraData.xr.hasValidOcclusionMesh)
                 EnqueuePass(m_XROcclusionMeshPass);
+#endif
+
+#if !UNITY_EDITOR
+            if (cameraData.xr.motionVectorRenderTargetValid)
+            {
+                RTHandle motionVecHandle = RTHandles.Alloc(cameraData.xr.motionVectorRenderTarget);
+                var rtMotionId = motionVecHandle.nameID;
+                rtMotionId = new RenderTargetIdentifier(rtMotionId, 0, CubemapFace.Unknown, -1);
+
+                // ID is the same since a RenderTexture encapsulates all the attachments, including both color+depth.
+                m_OculusMotionVecPass.Setup(rtMotionId, rtMotionId);
+                EnqueuePass(m_OculusMotionVecPass);
+            }
 #endif
 
             bool lastCameraInTheStack = cameraData.resolveFinalTarget;
