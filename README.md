@@ -9,6 +9,10 @@ Project is preconfigured with ASW for the Oculus Quest 1 &amp; 2 using a custom 
   
 ![screenshot](https://raw.githubusercontent.com/nukadelic/unity-application-spacewarp/master/Img/screenshot.png)  
 
+### Update (October-2023)
+
+* Created branch for 2023.2.Beta ⚠ for URP v16.0.3 [try it at your own risk](https://github.com/nukadelic/unity-application-spacewarp/tree/2023.2)
+
 ### Update (April-2023)
 
 + Bump minimum required version to 2021.3.21 ( thank you [tswierkot](https://github.com/tswierkot) - his [fork](https://github.com/tswierkot/unity-application-spacewarp/tree/2021.3.21) )
