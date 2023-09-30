@@ -1,8 +1,8 @@
 Feed me a beer (૭ ◉༬◉)૭⁾⁾⁾⁾ [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.me/wad1m)
 
-# ⚠ 2023.2 - Beta ( URP v 16.0.3 ) ⚠
+# ⚠ 2023.2 - Beta ( URP v 16.0.3 ) ⚠ 
 
-> Unity Editor version 2023.2 Beta ( tested on 0b10 )
+> Unity Editor version 2023.2 Beta ( tested on 0b10 ) - [15e458d](https://github.com/nukadelic/unity-application-spacewarp/commit/15e458db126a066e68436b531ab3e6d0b9024693)
 
 # Application Spacewarp Template Project
   
@@ -12,6 +12,11 @@ Project is preconfigured with ASW for the Oculus Quest 1 &amp; 2 using a custom 
 > * Starting from Jul-2023 the oculus store apk's must target Android 12L 
   
 ![screenshot](https://raw.githubusercontent.com/nukadelic/unity-application-spacewarp/master/Img/screenshot.png)  
+
+
+### Update (October-2023)
+
+* Oculus motion vectors for urp-16.0.3 - [15e458d](https://github.com/nukadelic/unity-application-spacewarp/commit/15e458db126a066e68436b531ab3e6d0b9024693)
 
 ### Update (April-2023)
 
