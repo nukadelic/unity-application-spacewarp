@@ -11,7 +11,7 @@ Project is preconfigured with ASW for the Oculus Quest 1 &amp; 2 using a custom 
 
 ### Update (Novermber-2023)
 
-* TextMeshPro motion vector support - should work great for free floating / fast moving text items like subtitles 
+* TextMeshPro motion vector support - should work great for free floating / fast moving text items like subtitles  ( blending is messed up , use the "UnlitTemplate w AlphaClipping" template instead ) 
 
 ### Update (October-2023)
 
