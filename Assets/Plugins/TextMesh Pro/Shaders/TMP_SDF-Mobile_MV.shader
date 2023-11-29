@@ -57,10 +57,9 @@ Properties {
 SubShader {
 	Tags
 	{
-		//"Queue"="Transparent"
+		"Queue" = "Overlay"
 		"RenderType" = "Opaque"
 		"IgnoreProjector"="True"
-		"RenderType"="Transparent"
 		"RenderPipeline" = "UniversalPipeline"
 	}
 
