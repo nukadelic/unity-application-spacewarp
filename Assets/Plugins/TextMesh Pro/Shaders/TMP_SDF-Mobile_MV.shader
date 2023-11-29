@@ -57,10 +57,14 @@ Properties {
 SubShader {
 	Tags
 	{
-		"Queue" = "Overlay"
+		//"Queue"="Transparent"
+		//"Queue" = "Overlay"
+		"Queue" = "Geometry"
+		//"Queue" = "AlphaTest"
 		"RenderType" = "Opaque"
 		"IgnoreProjector"="True"
 		"RenderPipeline" = "UniversalPipeline"
+		"IgnoreProjector" = "True"
 	}
 
 
@@ -77,7 +81,7 @@ SubShader {
 	ZWrite Off
 	Lighting Off
 	Fog { Mode Off }
-	ZTest [unity_GUIZTestMode]
+	ZTest Always
 	Blend One OneMinusSrcAlpha
 	ColorMask [_ColorMask]
 

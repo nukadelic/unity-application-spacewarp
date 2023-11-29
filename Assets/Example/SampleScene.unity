@@ -3955,7 +3955,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: TMP with MV and Underlay
+  m_text: 'TMP with MV and Underlay
+
+    ( I can''t figure out blending )'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: fc75e707f13071648b789d2f5d96d4b5, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: fc75e707f13071648b789d2f5d96d4b5, type: 2}
@@ -3982,8 +3984,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 22
-  m_fontSizeBase: 22
+  m_fontSize: 14
+  m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
