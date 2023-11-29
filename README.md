@@ -9,6 +9,10 @@ Project is preconfigured with ASW for the Oculus Quest 1 &amp; 2 using a custom 
   
 ![screenshot](https://raw.githubusercontent.com/nukadelic/unity-application-spacewarp/master/Img/screenshot.png)  
 
+### Update (Novermber-2023)
+
+* TextMeshPro motion vector support - should work great for free floating / fast moving text items like subtitles 
+
 ### Update (October-2023)
 
 * Created branch for 2023.2.Beta ⚠ for URP v16.0.3 [try it at your own risk](https://github.com/nukadelic/unity-application-spacewarp/tree/2023.2)
