@@ -221,7 +221,17 @@ namespace UnityEditor.Rendering
             platformSettings.textureCompression = compression;
             platformSettings.format = TextureImporterFormat.RGB9E5;
 
-            TextureGenerationOutput output = TextureGenerator.GenerateTexture(settings, colorBuffer);
+            NativeArray<Color32> color32Array = new NativeArray<Color32>(colorBuffer.Length, Allocator.Temp);
+            for (int i = 0; i < colorBuffer.Length; i++) {
+                color32Array[i] = new Color32(
+                  (byte)(colorBuffer[i].r * 255), (byte)(colorBuffer[i].g * 255),
+                  (byte)(colorBuffer[i].b * 255), (byte)(colorBuffer[i].a * 255)
+                );
+            }
+
+            TextureGenerationOutput output = TextureGenerator.GenerateTexture(settings, color32Array);
+
+            color32Array.Dispose();
 
             if (output.importWarnings.Length > 0)
             {
