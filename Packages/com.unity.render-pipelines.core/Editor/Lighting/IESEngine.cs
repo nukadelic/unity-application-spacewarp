@@ -1,7 +1,9 @@
 using System;
 using System.IO;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
+using Unity.Jobs;
 using UnityEditor;
 #if UNITY_2020_2_OR_NEWER
 using UnityEditor.AssetImporters;
@@ -221,8 +223,11 @@ namespace UnityEditor.Rendering
             platformSettings.textureCompression = compression;
             platformSettings.format = TextureImporterFormat.RGB9E5;
 
-            NativeArray<Color32> color32Array = new NativeArray<Color32>(colorBuffer.Length, Allocator.Temp);
-            for (int i = 0; i < colorBuffer.Length; i++) color32Array[i] = colorBuffer[i];
+            NativeArray<Color32> color32Array = new NativeArray<Color32>(colorBuffer.Length, Allocator.TempJob );
+
+            new Convert32Job { In = colorBuffer, Out = color32Array }
+                .ScheduleParallel( colorBuffer.Length , 128 , default )
+                .Complete();
 
             TextureGenerationOutput output = TextureGenerator.GenerateTexture(settings, color32Array);
 
@@ -234,6 +239,15 @@ namespace UnityEditor.Rendering
             }
 
             return (output.importInspectorWarnings, output.output);
+        }
+
+        [BurstCompile] private struct Convert32Job : IJobFor 
+        {
+            [WriteOnly] public NativeArray<Color32> Out;
+            
+            [ReadOnly] public NativeArray<Color> In;
+            
+            public void Execute(int index) { Out[index] = In[index]; }
         }
 
         Color ComputePixelColor(float horizontalAnglePosition, float verticalAnglePosition, float attenuation = 1.0f)
