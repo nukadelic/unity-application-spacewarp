@@ -4344,8 +4344,12 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 552231344176130576, guid: e16c0b52c4c001848bdfd5e99fba134f, type: 3}
+      propertyPath: label
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 552231344176130576, guid: e16c0b52c4c001848bdfd5e99fba134f, type: 3}
       propertyPath: valueInt
-      value: 75
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 552231344176130576, guid: e16c0b52c4c001848bdfd5e99fba134f, type: 3}
       propertyPath: valueStr
@@ -4388,16 +4392,24 @@ PrefabInstance:
       value: 48
       objectReference: {fileID: 0}
     - target: {fileID: 2305837857871486146, guid: e16c0b52c4c001848bdfd5e99fba134f, type: 3}
+      propertyPath: label
+      value: 0.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2305837857871486146, guid: e16c0b52c4c001848bdfd5e99fba134f, type: 3}
       propertyPath: valueInt
-      value: 80
+      value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 2305837857871486146, guid: e16c0b52c4c001848bdfd5e99fba134f, type: 3}
       propertyPath: valueStr
       value: RES
       objectReference: {fileID: 0}
     - target: {fileID: 2440458898284882615, guid: e16c0b52c4c001848bdfd5e99fba134f, type: 3}
+      propertyPath: label
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 2440458898284882615, guid: e16c0b52c4c001848bdfd5e99fba134f, type: 3}
       propertyPath: valueInt
-      value: 90
+      value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 2440458898284882615, guid: e16c0b52c4c001848bdfd5e99fba134f, type: 3}
       propertyPath: valueStr
@@ -4540,8 +4552,12 @@ PrefabInstance:
       value: FFR
       objectReference: {fileID: 0}
     - target: {fileID: 8503711441380926674, guid: e16c0b52c4c001848bdfd5e99fba134f, type: 3}
+      propertyPath: label
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8503711441380926674, guid: e16c0b52c4c001848bdfd5e99fba134f, type: 3}
       propertyPath: valueInt
-      value: 50
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 8503711441380926674, guid: e16c0b52c4c001848bdfd5e99fba134f, type: 3}
       propertyPath: valueStr

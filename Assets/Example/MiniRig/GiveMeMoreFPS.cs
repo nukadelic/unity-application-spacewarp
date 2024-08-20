@@ -92,7 +92,7 @@ public class GiveMeMoreFPS : MonoBehaviour
 
     void Start()
     {
-        Debug.Log("Build : URP v12 - April 18 , 2022");
+        Debug.Log( "unityVersion: " + Application.unityVersion + " URP 16.0.6" );
 
         // Get default values 
         
