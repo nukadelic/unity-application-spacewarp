@@ -372,6 +372,7 @@ namespace UnityEditor.Rendering.Universal.ShaderGraph
                 result.passes.Add(PassVariant(CorePasses.SceneSelection(target), CorePragmas.Default));
                 result.passes.Add(PassVariant(CorePasses.ScenePicking(target), CorePragmas.Default));
                 result.passes.Add(PassVariant(LitPasses._2D(target), CorePragmas.Default));
+                result.passes.Add(PassVariant(CorePasses.OculusMotionVectors(target), CorePragmas.Default));
 
                 return result;
             }
@@ -787,6 +788,13 @@ namespace UnityEditor.Rendering.Universal.ShaderGraph
                 StructFields.Varyings.texCoord0,                        // needed for meta UVs
                 StructFields.Varyings.texCoord1,                        // VizUV
                 StructFields.Varyings.texCoord2,                        // LightCoord
+            };
+
+            public static readonly FieldCollection MotionVectors = new FieldCollection()
+            {
+                StructFields.Attributes.uv4,                   // needed for previousPositionOS
+                UniversalStructFields.Varyings.curPositionCS,
+                UniversalStructFields.Varyings.prevPositionCS,
             };
         }
         #endregion

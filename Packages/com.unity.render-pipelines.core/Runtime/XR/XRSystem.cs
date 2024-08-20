@@ -428,7 +428,9 @@ namespace UnityEngine.Experimental.Rendering
             // XRTODO : remove this line and use XRSettings.useOcclusionMesh instead when it's fixed
             Mesh occlusionMesh = XRGraphicsAutomatedTests.running ? null : renderParameter.occlusionMesh;
 
-            return new XRView(renderParameter.projection, renderParameter.view, viewport, occlusionMesh, renderParameter.textureArraySlice);
+            bool prevViewValid = renderParameter.isPreviousViewValid;
+            Matrix4x4 prevViewMatrix = (prevViewValid) ? renderParameter.previousView : Matrix4x4.identity;
+            return new XRView(renderParameter.projection, renderParameter.view, viewport, occlusionMesh, renderParameter.textureArraySlice, prevViewValid, prevViewMatrix);
         }
 
         static XRPassCreateInfo BuildPass(XRDisplaySubsystem.XRRenderPass xrRenderPass, ScriptableCullingParameters cullingParameters)
@@ -447,6 +449,7 @@ namespace UnityEngine.Experimental.Rendering
                 renderTarget            = xrRenderPass.renderTarget,
                 renderTargetDesc        = rtDesc,
                 cullingParameters       = cullingParameters,
+                motionVectorRenderTarget    = XRPassCreateInfo.mvInvalidRT,
                 occlusionMeshMaterial   = s_OcclusionMeshMaterial,
                 occlusionMeshScale      = GetOcclusionMeshScale(),
                 foveatedRenderingInfo   = xrRenderPass.foveatedRenderingInfo,
@@ -455,6 +458,20 @@ namespace UnityEngine.Experimental.Rendering
                 copyDepth               = xrRenderPass.shouldFillOutDepth,
                 xrSdkRenderPass         = xrRenderPass
             };
+
+            if (xrRenderPass.hasMotionVectorPass)
+            {
+                passInfo.motionVectorRenderTarget = new RenderTargetIdentifier(xrRenderPass.motionVectorRenderTarget, 0, CubemapFace.Unknown, -1);
+
+                RenderTextureDescriptor rtMotionVectorDesc = new RenderTextureDescriptor(xrDesc.width, xrDesc.height, xrDesc.colorFormat, xrDesc.depthBufferBits, xrDesc.mipCount);
+                rtMotionVectorDesc.dimension = xrRenderPass.renderTargetDesc.dimension;
+                rtMotionVectorDesc.volumeDepth = xrRenderPass.renderTargetDesc.volumeDepth;
+                rtMotionVectorDesc.vrUsage = xrRenderPass.renderTargetDesc.vrUsage;
+                rtMotionVectorDesc.sRGB = xrRenderPass.renderTargetDesc.sRGB;
+                passInfo.motionVectorRenderTargetDesc = rtMotionVectorDesc;
+
+                Debug.Assert(passInfo.motionVectorRenderTargetValid, "Invalid motion vector render target from XRDisplaySubsystem!");
+            }
 
             return passInfo;
         }

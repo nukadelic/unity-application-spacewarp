@@ -226,7 +226,7 @@ namespace UnityEngine.Rendering.Universal
         private bool m_InitBuiltinXRConstants;
 #endif
         // Helper function to populate builtin stereo matricies as well as URP stereo matricies
-        internal void PushBuiltinShaderConstantsXR(RasterCommandBuffer cmd, bool renderIntoTexture)
+        internal void PushBuiltinShaderConstantsXR(RasterCommandBuffer cmd, bool renderIntoTexture, bool isOculusMotionVec = false )
         {
 #if ENABLE_VR && ENABLE_XR_MODULE
             // Multipass always needs update to prevent wrong view projection matrix set by other passes
@@ -240,9 +240,13 @@ namespace UnityEngine.Rendering.Universal
                 {
                     var projection1 = GetProjectionMatrix(1);
                     var view1 = GetViewMatrix(1);
-                    XRBuiltinShaderConstants.UpdateBuiltinShaderConstants(view0, projection0, renderIntoTexture, 0);
-                    XRBuiltinShaderConstants.UpdateBuiltinShaderConstants(view1, projection1, renderIntoTexture, 1);
-                    XRBuiltinShaderConstants.SetBuiltinShaderConstants(cmd);
+                    var prev0 = xr.GetPrevViewMatrix(0);
+                    var prev1 = xr.GetPrevViewMatrix(1);
+                    var valid0 = xr.GetPrevViewValid(0);
+                    var valid1 = xr.GetPrevViewValid(1);
+                    XRBuiltinShaderConstants.UpdateBuiltinShaderConstants( view0, projection0, renderIntoTexture, 0, valid0, prev0, isOculusMotionVec );
+                    XRBuiltinShaderConstants.UpdateBuiltinShaderConstants( view1, projection1, renderIntoTexture, 1, valid1, prev1, isOculusMotionVec );
+                    XRBuiltinShaderConstants.SetBuiltinShaderConstants( cmd, isOculusMotionVec );
                 }
                 else
                 {
@@ -254,6 +258,7 @@ namespace UnityEngine.Rendering.Universal
                 m_InitBuiltinXRConstants = true;
             }
 #endif
+            // frameData.Get<UniversalCameraData>().PushBuiltinShaderConstantsXR(cmd, renderIntoTexture, isOculusMotionVec );
         }
 
         /// <summary>
@@ -1756,6 +1761,7 @@ namespace UnityEngine.Rendering.Universal
         // DrawObjectsPass
         DrawOpaqueObjects,
         DrawTransparentObjects,
+        DrawOculusMVOpaqueObjects,
         DrawScreenSpaceUI,
 
         // RenderObjectsPass
