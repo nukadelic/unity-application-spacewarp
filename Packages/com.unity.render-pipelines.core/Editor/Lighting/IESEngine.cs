@@ -223,7 +223,7 @@ namespace UnityEditor.Rendering
             platformSettings.textureCompression = compression;
             platformSettings.format = TextureImporterFormat.RGB9E5;
 
-            NativeArray<Color32> color32Array = new NativeArray<Color32>(colorBuffer.Length, Allocator.TempJob );
+            NativeArray<Color32> color32Array = new NativeArray<Color32>(colorBuffer.Length, Allocator.TempJob , NativeArrayOptions.UninitializedMemory );
 
             new Convert32Job { In = colorBuffer, Out = color32Array }
                 .ScheduleParallel( colorBuffer.Length , 128 , default )
