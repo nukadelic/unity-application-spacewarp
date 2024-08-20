@@ -16,7 +16,6 @@ public class GiveMeMoreFPS : MonoBehaviour
 
     public TextMeshPro fpsLabel;
 
-
     // quality parameters 
 
     
@@ -92,7 +91,8 @@ public class GiveMeMoreFPS : MonoBehaviour
 
     void Start()
     {
-        Debug.Log("Build : URP v12 - April 18 , 2022");
+        Debug.Log("Unity version " + Application.unityVersion );
+        Debug.Log(SystemInfo.graphicsDeviceName + ", " + SystemInfo.graphicsDeviceType);
 
         // Get default values 
         
