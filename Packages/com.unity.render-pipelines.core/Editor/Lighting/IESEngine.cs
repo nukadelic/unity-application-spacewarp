@@ -222,12 +222,7 @@ namespace UnityEditor.Rendering
             platformSettings.format = TextureImporterFormat.RGB9E5;
 
             NativeArray<Color32> color32Array = new NativeArray<Color32>(colorBuffer.Length, Allocator.Temp);
-            for (int i = 0; i < colorBuffer.Length; i++) {
-                color32Array[i] = new Color32(
-                  (byte)(colorBuffer[i].r * 255), (byte)(colorBuffer[i].g * 255),
-                  (byte)(colorBuffer[i].b * 255), (byte)(colorBuffer[i].a * 255)
-                );
-            }
+            for (int i = 0; i < colorBuffer.Length; i++) color32Array[i] = colorBuffer[i];
 
             TextureGenerationOutput output = TextureGenerator.GenerateTexture(settings, color32Array);
 
