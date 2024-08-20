@@ -1,13 +1,24 @@
 Feed me a beer (૭ ◉༬◉)૭⁾⁾⁾⁾ [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.me/wad1m)
-  
+
+# ☢️ 2023.2.18f1 ( URP v 16.0.6 ) ☢️
+> ⚠ Avoid setting render resolution scale to custom values other then [ 100%, 80%, 60%, 40%, 20% ] as it will [crash](https://github.com/nukadelic/unity-application-spacewarp/commit/a6a1e4c43477c45a9f77ef2ab9aebeeb01cd663e) the native application
+
 # Application Spacewarp Template Project
   
-Project is preconfigured with ASW for the Oculus Quest 1 &amp; 2 using a custom render pipeline  
+Project is preconfigured with ASW for the Oculus Quest 2 &amp; 3 using a custom render pipeline  
   
 > ⚠ If you having trouble with dependencies on a freshly cloned project , make sure the editor have your account signed in so the package manager can download the dependencies , if you still can't open then : enter safe mode -> exit safe -> re import all assets .  
 > * Starting from Jul-2023 the oculus store apk's must target Android 12L 
   
 ![screenshot](https://raw.githubusercontent.com/nukadelic/unity-application-spacewarp/master/Img/screenshot.png)  
+
+### Update (August-2024)
+
+* urp-16.0.6 [2bc26a7](https://github.com/nukadelic/unity-application-spacewarp/commit/2bc26a7ac7c6ac8cde24a8a659a9a1439b50fa1a)
+
+### Update (October-2023)
+
+* Oculus motion vectors for urp-16.0.3 - [15e458d](https://github.com/nukadelic/unity-application-spacewarp/commit/15e458db126a066e68436b531ab3e6d0b9024693)
 
 ### Update (April-2023)
 
@@ -28,10 +39,6 @@ Unity version 2021.2+ [URPv12](https://github.com/Oculus-VR/Unity-Graphics/commi
 ### Update (Jul-2022)
 
 Added sample hlsl shader , see : Assets/Shaders/UnlitTemplate.shader
-
-### APK File 
-
-Try the build : https://github.com/nukadelic/unity-application-spacewarp/releases/tag/apk
 
 ### Notes
 
