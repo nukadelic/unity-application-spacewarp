@@ -25,7 +25,7 @@ namespace UnityEngine.Rendering
         {
             public static readonly GUIContent helpIcon = EditorGUIUtility.IconContent("_Help");
             public static readonly GUIContent settingsIcon = EditorGUIUtility.IconContent("_Popup");
-            public static readonly GUIContent debugIcon = EditorGUIUtility.IconContent("DebuggerEnabled");
+            public static readonly GUIContent debugIcon = EditorGUIUtility.IconContent("d_debug");
 
             public static readonly GUIContent lightingSettings = new GUIContent("Lighting Settings Asset");
             public static readonly GUIContent bakingTitle = new GUIContent("Baking");
@@ -41,12 +41,12 @@ namespace UnityEngine.Rendering
             public static readonly GUIContent bakeBox = new GUIContent("", "Controls if Probe Volumes in this scene are baked when Generating Lighting.");
             public static readonly GUIContent warnings = new GUIContent("Warnings");
 
-            public static readonly string[] bakingModeOptions = new string[] { "Single Scene", "Baking Sets (Advanced)" };
+            public static readonly string[] bakingModeOptions = new string[] { "Single Scene", "Baking Set" };
 
             public static readonly GUIContent iconEnableAll = new GUIContent("", CoreEditorStyles.GetMessageTypeIcon(MessageType.Info), "The Scene is loaded but is currently not enabled for Baking. It will therefore not be considered when generating lighting data.");
             public static readonly GUIContent iconLoadForBake = new GUIContent("", CoreEditorStyles.GetMessageTypeIcon(MessageType.Warning), "The Scene is currently enabled for baking but is unloaded in the Hierarchy. This may result in incomplete lighting data being generated.\nLoad the Scene in the Hierarchy, or use the shortcuts below to fix the issue.");
 
-            public static readonly string msgEnableAll = "Scenes which are currently loaded are not enabled for baking.\nNo probe will be baked for these scenes when generating lighting.";
+            public static readonly string msgEnableAll = "Some loaded Scenes are disabled by this Baking Set. These Scenes will not contribute to the generation of probe data.";
             public static readonly string msgUnloadOther = "Scene(s) not belonging to this Baking Set are currently loaded in the Hierarchy. This might result in incorrect lighting.";
             public static readonly string msgLoadForBake = "Some scene(s) in this Baking Set are not currently loaded in the Hierarchy. This might result in missing or incomplete lighting.";
 
@@ -206,6 +206,8 @@ namespace UnityEngine.Rendering
 
             Undo.undoRedoEvent -= OnUndoRedo;
             EditorSceneManager.sceneOpened -= OnSceneOpened;
+
+            ProbeGIBaking.Dispose();
         }
 
         void OnUndoRedo(in UndoRedoInfo info)
@@ -259,16 +261,26 @@ namespace UnityEngine.Rendering
             EditorGUILayout.Space();
         }
 
+        public override bool HasHelpGUI()
+        {
+            return true;
+        }
+
         public override void OnHeaderSettingsGUI()
         {
             var iconSize = EditorStyles.iconButton.CalcSize(Styles.helpIcon);
-
             if (GUI.Button(GUILayoutUtility.GetRect(iconSize.x, iconSize.y), Styles.helpIcon, EditorStyles.iconButton))
                 Help.BrowseURL(DocumentationInfo.GetPageLink("com.unity.render-pipelines.high-definition", documentationURL));
 
+            iconSize = EditorStyles.iconButton.CalcSize(Styles.settingsIcon);
             var rect = GUILayoutUtility.GetRect(iconSize.x, iconSize.y);
             if (EditorGUI.DropdownButton(rect, Styles.settingsIcon, FocusType.Passive, EditorStyles.iconButton))
-                EditorUtility.DisplayCustomMenu(rect, new[] { EditorGUIUtility.TrTextContent("Open Debug Window") }, -1, OpenProbeVolumeDebugPanel, null);
+                EditorUtility.DisplayCustomMenu(rect, new[] { EditorGUIUtility.TrTextContent("Open Rendering Debugger") }, -1, OpenProbeVolumeDebugPanel, null);
+
+            //var style = new GUIStyle(EditorStyles.iconButton);
+            //style.padding = new RectOffset(1, 1, 1, 1);
+            //if (GUI.Button(rect, Styles.debugIcon, style))
+            //    OpenProbeVolumeDebugPanel(null, null, 0);
         }
 
         void OpenProbeVolumeDebugPanel(object userData, string[] options, int selected)
@@ -874,7 +886,7 @@ namespace UnityEngine.Rendering
         internal static void OpenBakingSet(ProbeVolumeBakingSet bakingSet)
         {
             var lightingWindow = Type.GetType("UnityEditor.LightingWindow,UnityEditor");
-            EditorWindow.GetWindow(lightingWindow, utility: false, title: null, focus: false);
+            EditorWindow.GetWindow(lightingWindow, utility: false, title: null, focus: true);
             if (instance == null)
                 return;
 
@@ -952,9 +964,16 @@ namespace UnityEngine.Rendering
             }
 
             bool createPV = m_SingleSceneMode ? !ActiveSceneHasProbeVolume() : NoSceneHasProbeVolume();
-            if (createPV && EditorUtility.DisplayDialog("No Probe Volume in Scene", "Probe Volumes are enabled for this Project, but none exist in the Scene.\n\n" +
+            if (createPV)
+            {
+                if(!activeSet.DialogNoProbeVolumeInSetShown())
+                {
+                    if(EditorUtility.DisplayDialog("No Probe Volume in Scene", "Probe Volumes are enabled for this Project, but none exist in the Scene.\n\n" +
                         "Do you wish to add a Probe Volume to the Active Scene?", "Yes", "No"))
-                CreateProbeVolume();
+                        CreateProbeVolume();
+                    activeSet.SetDialogNoProbeVolumeInSetShown(true);
+                }
+            }
             if (m_SingleSceneMode)
             {
                 if (GetFirstProbeVolumeInNonActiveScene() != null)

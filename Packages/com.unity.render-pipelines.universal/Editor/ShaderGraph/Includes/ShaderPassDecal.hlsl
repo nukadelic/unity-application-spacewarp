@@ -55,9 +55,7 @@
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/NormalReconstruction.hlsl"
 #endif
 
-#if defined(_FOVEATED_RENDERING_NON_UNIFORM_RASTER)
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl"
-#endif
 
 void MeshDecalsPositionZBias(inout Varyings input)
 {
@@ -220,7 +218,7 @@ void Frag(PackedVaryings packedInput,
 #if defined(DECAL_PROJECTOR)
 #if UNITY_REVERSED_Z
 #if _RENDER_PASS_ENABLED
-    float depth = LOAD_FRAMEBUFFER_INPUT(GBUFFER3, positionCS.xy);
+    float depth = LOAD_FRAMEBUFFER_INPUT(GBUFFER3, positionCS.xy).x;
 #else
     float depth = LoadSceneDepth(positionCS.xy);
 #endif
@@ -248,8 +246,11 @@ void Frag(PackedVaryings packedInput,
 
     float2 positionSS = input.positionCS.xy * _ScreenSize.zw;
 
-#if defined(_FOVEATED_RENDERING_NON_UNIFORM_RASTER)
-    positionSS = RemapFoveatedRenderingNonUniformToLinearCS(input.positionCS.xy, true) * _ScreenSize.zw;
+#if defined(SUPPORTS_FOVEATED_RENDERING_NON_UNIFORM_RASTER)
+    UNITY_BRANCH if (_FOVEATED_RENDERING_NON_UNIFORM_RASTER)
+    {
+        positionSS = RemapFoveatedRenderingNonUniformToLinearCS(input.positionCS.xy, true) * _ScreenSize.zw;
+    }
 #endif
 
 #ifdef DECAL_PROJECTOR
@@ -327,6 +328,12 @@ void Frag(PackedVaryings packedInput,
     outColor = color;
 #elif defined(DECAL_GBUFFER)
 
+    // Need to reconstruct normal here for inputData.bakedGI, but also save off surfaceData.normalWS for correct GBuffer blending
+    half3 normalToPack = surfaceData.normalWS.xyz;
+#ifdef DECAL_RECONSTRUCT_NORMAL
+    surfaceData.normalWS.xyz = normalize(lerp(normalWS.xyz, surfaceData.normalWS.xyz, surfaceData.normalWS.w));
+#endif
+
     InputData inputData;
     InitializeInputData(input, positionWS, surfaceData.normalWS.xyz, viewDirectionWS, inputData);
 
@@ -338,21 +345,16 @@ void Frag(PackedVaryings packedInput,
 
     // Skip GI if there is no abledo
 #ifdef _MATERIAL_AFFECTS_ALBEDO
-
-    // GI needs blended normal
-#ifdef DECAL_RECONSTRUCT_NORMAL
-    half3 normalGI = normalize(lerp(normalWS.xyz, surfaceData.normalWS.xyz, surfaceData.normalWS.w));
-#endif
-
     Light mainLight = GetMainLight(inputData.shadowCoord, inputData.positionWS, inputData.shadowMask);
-    MixRealtimeAndBakedGI(mainLight, normalGI, inputData.bakedGI, inputData.shadowMask);
-    half3 color = GlobalIllumination(brdfData, inputData.bakedGI, surface.occlusion, normalGI, inputData.viewDirectionWS);
+    MixRealtimeAndBakedGI(mainLight, surfaceData.normalWS.xyz, inputData.bakedGI, inputData.shadowMask);
+    half3 color = GlobalIllumination(brdfData, inputData.bakedGI, surface.occlusion, surfaceData.normalWS.xyz, inputData.viewDirectionWS);
 #else
     half3 color = 0;
 #endif
 
     // We can not use usual GBuffer functions (etc. BRDFDataToGbuffer) as we use alpha for blending
-    half3 packedNormalWS = PackNormal(surfaceData.normalWS.xyz);
+    #pragma warning (disable : 3578) // The output value isn't completely initialized.
+    half3 packedNormalWS = PackNormal(normalToPack);
     fragmentOutput.GBuffer0 = half4(surfaceData.baseColor.rgb, surfaceData.baseColor.a);
     fragmentOutput.GBuffer1 = 0;
     fragmentOutput.GBuffer2 = half4(packedNormalWS, surfaceData.normalWS.a);
@@ -360,6 +362,7 @@ void Frag(PackedVaryings packedInput,
 #if OUTPUT_SHADOWMASK
     fragmentOutput.GBuffer4 = inputData.shadowMask; // will have unity_ProbesOcclusion value if subtractive lighting is used (baked)
 #endif
+    #pragma warning (default : 3578) // Restore output value isn't completely initialized.
 
 #elif defined(DECAL_FORWARD_EMISSIVE)
     // Emissive need to be pre-exposed

@@ -1662,6 +1662,8 @@ namespace UnityEditor.Rendering.Universal.ShaderGraph
         const string kDBuffer = "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DBuffer.hlsl";
         const string kSelectionPickingPass = "Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/Includes/SelectionPickingPass.hlsl";
         const string kLODCrossFade = "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl";
+        const string kFoveatedRenderingKeywords = "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRenderingKeywords.hlsl";
+        const string kFoveatedRendering = "Packages/com.unity.render-pipelines.core/ShaderLibrary/FoveatedRendering.hlsl";
 
         // Files that are included with #include_with_pragmas
         const string kDOTS = "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DOTS.hlsl";
@@ -1676,6 +1678,8 @@ namespace UnityEditor.Rendering.Universal.ShaderGraph
             { kLighting, IncludeLocation.Pregraph },
             { kInput, IncludeLocation.Pregraph },
             { kTextureStack, IncludeLocation.Pregraph },        // TODO: put this on a conditional
+            { kFoveatedRenderingKeywords, IncludeLocation.Pregraph, true },
+            { kFoveatedRendering, IncludeLocation.Pregraph },
         };
 
         public static readonly IncludeCollection DOTSPregraph = new IncludeCollection
@@ -1764,6 +1768,7 @@ namespace UnityEditor.Rendering.Universal.ShaderGraph
             // Pre-graph
             { CorePregraph },
             { ShaderGraphPregraph },
+            { DOTSPregraph },
 
             // Post-graph
             { CorePostgraph },
@@ -1775,6 +1780,7 @@ namespace UnityEditor.Rendering.Universal.ShaderGraph
             // Pre-graph
             { CorePregraph },
             { ShaderGraphPregraph },
+            { DOTSPregraph },
 
             // Post-graph
             { CorePostgraph },
@@ -1892,6 +1898,21 @@ namespace UnityEditor.Rendering.Universal.ShaderGraph
             stages = KeywordShaderStage.Fragment,
         };
 
+        public static readonly KeywordDescriptor EvaluateSh = new KeywordDescriptor()
+        {
+            displayName = "Evaluate SH",
+            referenceName = "EVALUATE_SH",
+            type = KeywordType.Enum,
+            definition = KeywordDefinition.MultiCompile,
+            scope = KeywordScope.Global,
+            entries = new KeywordEntry[]
+            {
+                new KeywordEntry() { displayName = "Off", referenceName = "" },
+                new KeywordEntry() { displayName = "Evaluate SH Mixed", referenceName = "MIXED" },
+                new KeywordEntry() { displayName = "Evaluate SH Vertex", referenceName = "VERTEX" },
+            }
+        };
+
         public static readonly KeywordDescriptor MainLightShadows = new KeywordDescriptor()
         {
             displayName = "Main Light Shadows",
@@ -1985,42 +2006,20 @@ namespace UnityEditor.Rendering.Universal.ShaderGraph
 
         public static readonly KeywordDescriptor ShadowsSoft = new KeywordDescriptor()
         {
-            displayName = "Shadows Soft",
-            referenceName = "_SHADOWS_SOFT",
-            type = KeywordType.Boolean,
+            displayName = "Soft Shadows",
+            referenceName = "",
+            type = KeywordType.Enum,
             definition = KeywordDefinition.MultiCompile,
             scope = KeywordScope.Global,
             stages = KeywordShaderStage.Fragment,
-        };
-
-        public static readonly KeywordDescriptor ShadowsSoftLow = new KeywordDescriptor()
-        {
-            displayName = "Shadows Soft Low Quality",
-            referenceName = "_SHADOWS_SOFT_LOW",
-            type = KeywordType.Boolean,
-            definition = KeywordDefinition.MultiCompile,
-            scope = KeywordScope.Global,
-            stages = KeywordShaderStage.Fragment,
-        };
-
-        public static readonly KeywordDescriptor ShadowsSoftMedium = new KeywordDescriptor()
-        {
-            displayName = "Shadows Soft Medium Quality",
-            referenceName = "_SHADOWS_SOFT_MEDIUM",
-            type = KeywordType.Boolean,
-            definition = KeywordDefinition.MultiCompile,
-            scope = KeywordScope.Global,
-            stages = KeywordShaderStage.Fragment,
-        };
-
-        public static readonly KeywordDescriptor ShadowsSoftHigh = new KeywordDescriptor()
-        {
-            displayName = "Shadows Soft High Quality",
-            referenceName = "_SHADOWS_SOFT_HIGH",
-            type = KeywordType.Boolean,
-            definition = KeywordDefinition.MultiCompile,
-            scope = KeywordScope.Global,
-            stages = KeywordShaderStage.Fragment,
+            entries = new KeywordEntry[]
+            {
+                new KeywordEntry() { displayName = "Off", referenceName = "" },
+                new KeywordEntry() { displayName = "Soft Shadows Per Light", referenceName = "SHADOWS_SOFT" },
+                new KeywordEntry() { displayName = "Soft Shadows Low", referenceName = "SHADOWS_SOFT_LOW" },
+                new KeywordEntry() { displayName = "Soft Shadows Medium", referenceName = "SHADOWS_SOFT_MEDIUM" },
+                new KeywordEntry() { displayName = "Soft Shadows High", referenceName = "SHADOWS_SOFT_HIGH" },
+            }
         };
 
         public static readonly KeywordDescriptor MixedLightingSubtractive = new KeywordDescriptor()
@@ -2157,16 +2156,6 @@ namespace UnityEditor.Rendering.Universal.ShaderGraph
             stages = KeywordShaderStage.Fragment,
         };
 
-        public static readonly KeywordDescriptor FoveatedRendering = new KeywordDescriptor()
-        {
-            displayName = "Foveated Rendering Non Uniform Raster",
-            referenceName = "_FOVEATED_RENDERING_NON_UNIFORM_RASTER",
-            type = KeywordType.Boolean,
-            definition = KeywordDefinition.MultiCompile,
-            scope = KeywordScope.Global,
-            stages = KeywordShaderStage.Fragment,
-        };
-
         public static readonly KeywordDescriptor SceneSelectionPass = new KeywordDescriptor()
         {
             displayName = "Scene Selection Pass",
@@ -2223,11 +2212,11 @@ namespace UnityEditor.Rendering.Universal.ShaderGraph
             referenceName = ShaderKeywordStrings.LOD_FADE_CROSSFADE,
             type = KeywordType.Boolean,
             definition = KeywordDefinition.MultiCompile,
-            
+
             // Note: SpeedTree shaders used to have their own PS-based Crossfade,
             //       as well as a VS-based smooth LOD transition effect.
             //       These shaders need the LOD_FADE_CROSSFADE keyword in the VS
-            //       to skip the VS-based effect. 
+            //       to skip the VS-based effect.
             scope = KeywordScope.Global
         };
 

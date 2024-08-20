@@ -1,4 +1,5 @@
 # Changelog
+
 All notable changes to this package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
@@ -8,6 +9,112 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 Version Updated
 The version number for this package has increased due to a version update of a related graphics package.
+
+## [16.0.5] - 2024-04-03
+
+This version is compatible with Unity 2023.2.18f1.
+
+### Changed
+- Enable renderViewportScale for XR intermediate textures.
+- The Auto option in SH Evaluation Mode, in the URP Asset, now chooses Per Vertex instead of Per Pixel on mobile and similar devices.
+
+### Fixed
+- Fixed an issue where Evaluate SH and SoftShadow keywords were incorrectly declared in ShaderGraph shaders.
+- Fixed an issue where LOD Crossfade was declared twice in Unlit ShaderGraph.
+- Fixed an "Implicit truncation of vector type" warning in ShaderPassDecal.hlsl.
+- Fixed an "Output value 'fragmentOutput' is not completely initialized" warning in ShaderPassDecal.hlsl.
+- Fixed an error in Bloom.shader for foveated when the debug check is enabled inside FoveatedRendering.hlsl.
+- Fixed an "floating point division by zero" warning in Shadows.hlsl.
+- Fixed an issue where disabling SSAO feature didn't work in built projects when the SSAO disabled keyword had been stripped out.
+- Fixed an issue where NullReferenceExceptions appeared when switching between Quality Levels with Post Processing Volume Update mode set to ViaScripting.
+- Fixing RenderRequest using wrong renderer.
+- Fixed an issue where renderer features didn't pass validation if they inherit from another renderer feature.
+- Fixed an issue where downsampled SSAO had serious artefacts on Android.
+- Fixed an issue where Screen Space Decals keyword was missing when Strip  Unused Variants was turned off.
+- Add UI features to encourage the use of Rendering Layers in URP to control selective lighting, instead of using culling mask. The former works across Deferred, Forward and Forward+, while the latter only works with Forward.
+- Fixed the FinalPostPass executing before "AfterRenderingPostProcessing" instead of after it.
+- Fixed overlays not visible when using FXAA with Full Screen Pass Renderer Features set to "AfterRenderingPostProcessing".
+- Fixed incorrect alpha-clip behavior on transparent surfaces.
+- Ensure motion vector depth buffer is valid for cameras with motion vectors enabled.
+- Fixed an issue where using Alpha Clipped shaders and Depth Priming resulted in invisible objects.
+- Fixed an issue where keywords were incorrectly enabled/disabled when shadows were enabled in the URP Asset and "Transparent Receive Shadows" was disabled on the renderer.
+- Fixed an issue where setting light position, direction and shadow bias allocated due to using strings instead of integers.
+- Motion Vector pass can now render after opaques. It correctly follows its depth dependency in pass order.
+- Added logic to enforce consistent hardware dynamic resolution settings during rendering to avoid issues when external code changes the global setting.
+- Fixed an issue where an incorrect WorldToCamera matrix was used in the main and additional light shadow passes.
+- Fixed an issue where logging an error gave a NullReferenceException for Server Builds.
+- Restore `EditorGUIUtility.labelWidth` to default after drawing MaterialHeaderScopes
+- Scriptable TAA settings.
+- Fixed depth only cameras trying to render renderer features which requires depth.
+- Fixed preview windows no longer renders render objects features
+- Fixed the NativeRenderPass camera target MSAA logic to match the non-NRP path
+- Fix depth buffer disappearing after using SwapColorBuffer
+- Fix shadow flickering when using Screen Space shadows and have depth priming enabled
+- Fixed false-negative missing RendererFeatures errors.
+
+## [16.0.4] - 2023-12-21
+
+This version is compatible with Unity 2023.2.5f1.
+
+### Changed
+- Added support for Vulkan URP to use MSAA samples count fallback in the Player Settings window. Prior to this x2 fallback would have been to upgrade to x4.
+- Improved stripping logic for Accurate G-buffer normals when using Deferred rendering on Vulkan.
+- Improved runtime performance by adding checks for _ALPHATEST_ON when rendering depth, shadows and depth normals.
+
+### Fixed
+- Fixed an issue where transparent materials were marked as dirty during material UI updates and project saving.
+- Fixed an `IndexOutOfRangeException` error that occurred when using Native RenderPass on the Deferred Rendering Path. 
+- Fixed an issue that caused some segements and corners of sprite shape shadows to not render correctly.
+- Fixed an issue that caused projects using the **Deferred Rendering Path** with `batchmode` and `nographics` to produce incorrect variant stripping.
+- Fixed an issue that caused Unlit shaders to output incorrect normals when using the **Deferred Rendering Path** and **Accurate G-Buffer normals**.
+- Disabled Motion Blur effect in Edit mode, to keep the Game view clear while editing. Motion Blur works as before in PlayMode and standalone builds.
+- Fixed an issue that caused Unity to cull decals erroneously when using the **Screen Space** technique.
+- Fixed a situation where the Color Grading Mode of one camera in a multi-camera scene could clamp the output to Low Dynamic Range, even though the output should be High Dynamic Range. URP only.
+- Fixed an issue where enabling HDR Debug Views once would break the native render pass.
+- Removed unnecessary `DefaultVolumeEditor` assertion errors that occurred when multiple Inspectors were open.
+- Fixed an issue that caused URP resources to return `null` after upgrading.
+- Fixed an issue that partially corrupted display on Android if Vulkan **Display Rotation** was enabled during rendering.
+- Fixed the SH Vertex Evaluation Mode in URPLit shader graph.
+- Fixed an issue with post-processing that generated predictable values instead of random values.
+- URP: Fixed an issue where screen space decals miscalculated ambient lighting.
+- Fixed an issue where Light Layers did not check scene lighting setting when enabling the keyword.
+- Fixed t Fullscreen Render Feature doesn't cause rendering layers to run in the depth normals prepass anymore.
+
+## [16.0.3] - 2023-09-26
+
+This version is compatible with Unity 2023.2.0b12.
+
+### Changed
+- Stripping or IRenderPipelineGraphicsSettings.
+
+### Fixed
+- Fixed an issue where rendering layers keywords were not enabled correctly when using Decals & SSAO in Deferred.
+- Fixed an issue where incorrect Shader Keyword Prefiltering was used with SSAO when AfterOpaque was used.
+- Fixed an issue where data-driven lens-flare was missing occlusion.
+- Added an `RTHandle` pool to fix the `RTHandle` reallocation at runtime.
+- Fixed the Overlay UI so it does not disappear when the Render Graph and HDR display support is used in the Editor.
+- Fixed the `missing _Color` exception for the *Shader* property.
+- Fixed a bug with Light Layers not working correctly when Additional Lights are set to Per Vertex.
+- Fixed a black screen issue caused by using URP hardware Dynamic Resolution with DX12.
+- Fixed an issue where additional lights were not rendering correctly when using a mix of shadow settings in deferred.
+- Fixed an issue where Shader IDs weren't reset properly in the `DepthNormals` pass.
+- Fixed an issue where `IndexOutOfRangeException` was thrown when creating a stacked camera from a script.
+- Fixed an issue where `NullReferenceException` was thrown when a camera prefab referenced a camera outside the prefab in the camera stack.
+- Fixed an issue where settings disappeared when deleting a child Camera of the Main Camera.
+- Fixed an issue with Screen Space Decals where dark artefacts appeared in the Editor.
+- Fixed a memory leak in the `RenderTexture` method that would occur when rtHandle realloc failed to add resources to the render texture resource pool.
+- Fixed noise and flicker caused by TAA when the *Very High* option is in use.
+- Fixed shader stripping when using APV.
+- Fixed an issue causing 'implicit truncation of vector type' warning when using ShaderGraph shaders in the Forward+ Rendering Path.
+- Added GBuffer (fill) passes to ComplexLit and Unlit shader to prevent GBuffer data holes.
+- Added Shader Keywords for Soft Shadow quality levels and disabled per-light quality level on untethered XR platforms.
+- Fixed an issue so it is now possible to add a Renderer Feature on a renderer even if another feature has a missing/broken script.
+- Fixed an issue where reflection probes were not updated correctly when using Forward+.
+- Fixed an issue where HDR Output could not be turned off via the `HDROutputSettings` API in the editor.
+- Fixed an issue where Rendering Layers didn't work properly when opening a project.
+- Fixed missing padding at the bottom of URP's Global Settings
+- Fixed visible outline when composited ShadowCaster2Ds with transparency overlap
+- Fixed an issue where selecting a stacked camera caused the editor to freeze and sometimes crash.
 
 ## [16.0.2] - 2023-06-28
 
@@ -929,7 +1036,7 @@ This version is compatible with Unity 2022.2.0a8.
 - Fixed an issue where Terrain hole Shader changes were missing. [Case 1179808](https://issuetracker.unity3d.com/issues/terrain-brush-tool-is-not-drawing-when-paint-holes-is-selected).
 - Fixed an issue where the Shader Graph `SceneDepth` node didn't work with XR single-pass (double-wide) rendering. See [case 1123069](https://issuetracker.unity3d.com/issues/lwrp-vr-shadergraph-scenedepth-doesnt-work-in-single-pass-rendering).
 - Fixed Unlit and BakedLit shader compilations in the meta pass.
-- Fixed an issue where the Bokeh Depth of Field shader would fail to compile on PS4.
+- Fixed an issue where the Bokeh Depth of Field shader would fail to compile on a console platform.
 - Fixed an issue where the Scene lighting button didn't work when you used the 2D Renderer.
 - Fixed a performance regression when you used the 2D Renderer.
 - Fixed an issue where the Freeform 2D Light gizmo didn't correctly show the Falloff offset.
@@ -1520,7 +1627,7 @@ Read/write XRGraphicsConfig -> Read-only XRGraphics interface to XRSettings.
 
 ### Fixed
 - Post-processing now works with VR on PC.
-- PS4 compiler error
+- Console platform compiler error
 - Fixed VR multiview rendering by forcing MSAA to be off. There's a current issue in engine that breaks MSAA and Texture2DArray.
 - Fixed UnityPerDraw CB layout
 - GLCore compute buffer compiler error

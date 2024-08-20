@@ -29,20 +29,6 @@ namespace UnityEngine.Rendering.Universal
         int m_AssetVersion = k_LastVersion;
 #pragma warning restore CS0414
 
-        public void OnBeforeSerialize()
-        {
-        }
-
-        public void OnAfterDeserialize()
-        {
-#if UNITY_EDITOR
-            if (m_AssetVersion != k_LastVersion)
-            {
-                EditorApplication.delayCall += () => UpgradeAsset(this.GetInstanceID());
-            }
-#endif
-        }
-
 #if UNITY_EDITOR
         static void UpgradeAsset(int assetInstanceID)
         {
@@ -126,7 +112,10 @@ namespace UnityEngine.Rendering.Universal
             if (RenderPipelineGlobalSettingsUtils.TryEnsure<UniversalRenderPipelineGlobalSettings, UniversalRenderPipeline>(ref currentInstance, defaultPath, canCreateNewAsset))
             {
                 if (currentInstance != null && currentInstance.m_AssetVersion != k_LastVersion)
+                {
                     UpgradeAsset(currentInstance.GetInstanceID());
+                    AssetDatabase.SaveAssetIfDirty(currentInstance);
+                }
 
                 return currentInstance;
             }
@@ -214,7 +203,15 @@ namespace UnityEngine.Rendering.Universal
         [SerializeField]
         uint m_ValidRenderingLayers;
         /// <summary>Valid rendering layers that can be used by graphics. </summary>
-        public uint validRenderingLayers => m_ValidRenderingLayers;
+        public uint validRenderingLayers {
+            get
+            {
+                if (m_PrefixedRenderingLayerNames == null)
+                    UpdateRenderingLayerNames();
+
+                return m_ValidRenderingLayers;
+            }
+        }
 
         /// <summary>Regenerate Rendering Layer names and their prefixed versions.</summary>
         internal void UpdateRenderingLayerNames()

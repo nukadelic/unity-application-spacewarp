@@ -429,7 +429,7 @@ namespace UnityEngine.Rendering.Universal
 
         // Default values set when a new UniversalRenderPipeline asset is created
         [SerializeField] int k_AssetVersion = 12;
-        [SerializeField] int k_AssetPreviousVersion = 11;
+        [SerializeField] int k_AssetPreviousVersion = 12;
 
         // Deprecated settings for upgrading sakes
         [SerializeField] RendererType m_RendererType = RendererType.UniversalRenderer;
@@ -477,7 +477,6 @@ namespace UnityEngine.Rendering.Universal
 #endif
         [SerializeField] LightProbeSystem m_LightProbeSystem = LightProbeSystem.LegacyLightProbes;
         [SerializeField] ProbeVolumeTextureMemoryBudget m_ProbeVolumeMemoryBudget = ProbeVolumeTextureMemoryBudget.MemoryBudgetMedium;
-        [SerializeField] ProbeVolumeBlendingTextureMemoryBudget m_ProbeVolumeBlendingMemoryBudget = ProbeVolumeBlendingTextureMemoryBudget.MemoryBudgetLow;
         [SerializeField] bool m_SupportProbeVolumeStreaming = false;
 #if UNITY_EDITOR
         [ShaderKeywordFilter.RemoveIf(ProbeVolumeSHBands.SphericalHarmonicsL1, keywordNames: ShaderKeywordStrings.ProbeVolumeL2)]
@@ -1197,15 +1196,6 @@ namespace UnityEngine.Rendering.Universal
         {
             get { return m_ProbeVolumeMemoryBudget; }
             internal set { m_ProbeVolumeMemoryBudget = value; }
-        }
-
-        /// <summary>
-        /// Probe Volume Memory Budget for scenario blending.
-        /// </summary>
-        public ProbeVolumeBlendingTextureMemoryBudget probeVolumeBlendingMemoryBudget
-        {
-            get { return m_ProbeVolumeBlendingMemoryBudget; }
-            internal set { m_ProbeVolumeBlendingMemoryBudget = value; }
         }
 
         /// <summary>
@@ -2007,9 +1997,8 @@ namespace UnityEngine.Rendering.Universal
                 asset.k_AssetPreviousVersion = 10;
             }
 
-            if(asset.k_AssetPreviousVersion < 11)
+            if (asset.k_AssetPreviousVersion < 11)
             {
-                ResourceReloader.ReloadAllNullIn(asset, packagePath);
                 asset.k_AssetPreviousVersion = 11;
             }
 
@@ -2023,6 +2012,7 @@ namespace UnityEngine.Rendering.Universal
                 asset.k_AssetPreviousVersion = 12;
             }
 
+            ResourceReloader.ReloadAllNullIn(asset, packagePath);
             EditorUtility.SetDirty(asset);
         }
 

@@ -776,6 +776,26 @@ namespace UnityEngine.Rendering
                 perSceneDataList.Add(data);
         }
 
+        /// <summary>
+        /// Set the currently active baking set.
+        /// Can be used when loading additively two scenes belonging to different baking sets to control which one is active
+        /// </summary>
+        /// <param name="bakingSet">The baking set to load.</param>
+        public void SetActiveBakingSet(ProbeVolumeBakingSet bakingSet)
+        {
+            if (m_CurrentBakingSet == bakingSet)
+                return;
+
+            foreach (var data in perSceneDataList)
+                data.QueueSceneRemoval();
+
+            UnloadBakingSet();
+            SetBakingSetAsCurrent(bakingSet);
+
+            foreach (var data in perSceneDataList)
+                data.QueueSceneLoading();
+        }
+
         void SetBakingSetAsCurrent(ProbeVolumeBakingSet bakingSet)
         {
             m_CurrentBakingSet = bakingSet;
@@ -797,16 +817,23 @@ namespace UnityEngine.Rendering
             {
                 SetBakingSetAsCurrent(sceneData.GetBakingSetForScene(data.sceneGUID));
             }
-            else
-            {
-                Debug.Assert(perSceneDataList.Count > 0);
-                var sceneBakingSet = sceneData.GetBakingSetForScene(data.sceneGUID); // It can be null if the scene was never added to a baking set and we are baking in single scene mode, in that case we don't have a baking set for it yet and we need to skip 
+        }
+        
+        internal void UnloadBakingSet()
+        {
+            // Need to make sure everything is unloaded before killing the baking set ref (we need it to unload cell CPU data).
+            PerformPendingOperations();
 
-                if (sceneBakingSet != null && !string.IsNullOrEmpty(data.sceneGUID) && sceneBakingSet != m_CurrentBakingSet)
-                {
-                    Debug.LogError("Trying to load a scene from a different baking set than the currently loaded scenes.");
-                    // TODO manage this error (since it's done late because of stupid random init order, the PerSceneData is already in the system...)
-                }
+            if (m_CurrentBakingSet != null)
+                m_CurrentBakingSet.Cleanup();
+            m_CurrentBakingSet = null;
+            m_CurrGlobalBounds = new Bounds();
+
+            // Restart pool from zero to avoid unnecessary memory consumption when going from a big to a small scene.
+            if (m_ScratchBufferPool != null)
+            {
+                m_ScratchBufferPool.Cleanup();
+                m_ScratchBufferPool = null;
             }
         }
 
@@ -814,22 +841,7 @@ namespace UnityEngine.Rendering
         {
             perSceneDataList.Remove(data);
             if (perSceneDataList.Count == 0)
-            {
-                // Need to make sure everything is unloaded before killing the baking set ref (we need it to unload cell CPU data).
-                PerformPendingOperations();
-
-                if (m_CurrentBakingSet != null)
-                    m_CurrentBakingSet.Cleanup();
-                m_CurrentBakingSet = null;
-                m_CurrGlobalBounds = new Bounds();
-
-                // Restart pool from zero to avoid unnecessary memory consumption when going from a big to a small scene.
-                if (m_ScratchBufferPool != null)
-                {
-                    m_ScratchBufferPool.Cleanup();
-                    m_ScratchBufferPool = null;
-                }
-            }
+                UnloadBakingSet();
         }
 
         internal float indexFragmentationRate { get => m_Index.fragmentationRate; }
@@ -878,7 +890,6 @@ namespace UnityEngine.Rendering
 #if UNITY_EDITOR
             if (sceneData != null)
                 UnityEditor.SceneManagement.EditorSceneManager.sceneSaving += sceneData.OnSceneSaving;
-            AdditionalGIBakeRequestsManager.instance.Init();
 #endif
             m_EnabledBySRP = true;
 
@@ -954,7 +965,6 @@ namespace UnityEngine.Rendering
             if (!m_ProbeReferenceVolumeInit) return;
 
 #if UNITY_EDITOR
-            AdditionalGIBakeRequestsManager.instance.Cleanup();
             if (sceneData != null)
                 UnityEditor.SceneManagement.EditorSceneManager.sceneSaving -= sceneData.OnSceneSaving;
 #endif
@@ -1225,25 +1235,21 @@ namespace UnityEngine.Rendering
 
             if (m_CurrentBakingSet != null && bakingSet != m_CurrentBakingSet)
             {
-                Debug.LogError($"Trying to load Probe Volume data for a scene from a different baking set than currently loaded ones. " +
-                               $"Please make sure all loaded scenes are in the same baking set.");
+                // Trying to load data for a scene from a different baking set than currently loaded ones.
+                // This should not throw an error, but it's not supported
                 return;
             }
 
             // If we don't have any loaded asset yet, we need to verify the other queued assets.
-            // Only need to check one entry here, they should all have the same baking set by construction.
             if (m_PendingScenesToBeLoaded.Count != 0)
             {
                 foreach(var scene in m_PendingScenesToBeLoaded.Keys)
                 {
                     var toBeLoadedBakingSet = sceneData.GetBakingSetForScene(scene);
                     if (bakingSet != toBeLoadedBakingSet)
-                    {
-                        Debug.LogError($"Trying to load Probe Volume data for a scene from a different baking set from other scenes that are being loaded. " +
-                                    $"Please make sure all loaded scenes are in the same baking set.");
                         return;
-                    }
 
+                    // Only need to check one entry here, they should all have the same baking set by construction.
                     break;
                 }
             }
@@ -1352,11 +1358,6 @@ namespace UnityEngine.Rendering
 
         void PerformPendingDeletion()
         {
-            if (!m_ProbeReferenceVolumeInit)
-            {
-                m_PendingScenesToBeUnloaded.Clear(); // If we are not init, we have not loaded yet.
-            }
-
             foreach (var unloadRequest in m_PendingScenesToBeUnloaded)
             {
                 RemovePendingScene(unloadRequest.Key, unloadRequest.Value);
@@ -1578,17 +1579,22 @@ namespace UnityEngine.Rendering
         {
             if (m_ProbeReferenceVolumeInit)
             {
-                // Need to do that first because some assets may be in the process of being removed.
-                PerformPendingOperations();
+                try
+                {
+                    // Need to do that first because some assets may be in the process of being removed.
+                    PerformPendingOperations();
+                }
+                finally
+                {
+                    UnloadAllCells();
+                    m_Pool.Clear();
+                    m_BlendingPool.Clear();
+                    m_Index.Clear();
+                    cells.Clear();
 
-                UnloadAllCells();
-                m_Pool.Clear();
-                m_BlendingPool.Clear();
-                m_Index.Clear();
-                cells.Clear();
-
-                Debug.Assert(m_ToBeLoadedCells.size == 0);
-                Debug.Assert(m_LoadedCells.size == 0);
+                    Debug.Assert(m_ToBeLoadedCells.size == 0);
+                    Debug.Assert(m_LoadedCells.size == 0);
+                }
             }
 
             if (clearAssetsOnVolumeClear)
@@ -1897,6 +1903,12 @@ namespace UnityEngine.Rendering
         {
             if (m_ProbeReferenceVolumeInit)
             {
+                // We have to store the indices before the loop has it modifes the dictionary
+                var cellIndices = new List<int>(cells.Keys);
+                foreach (int cellIdx in cellIndices)
+                    RemoveCell(cellIdx);
+                Debug.Assert(cells.Count == 0);
+
                 m_Index.Cleanup();
                 m_CellIndices.Cleanup();
 
@@ -1913,10 +1925,15 @@ namespace UnityEngine.Rendering
                 }
 
                 m_TemporaryDataLocation.Cleanup();
+                m_ProbeReferenceVolumeInit = false;
             }
 
             ClearDebugData();
-            m_ProbeReferenceVolumeInit = false;
+            m_PendingScenesToBeUnloaded.Clear();
+            m_ActiveScenes.Clear();
+
+            Debug.Assert(m_ToBeLoadedCells.size == 0);
+            Debug.Assert(m_LoadedCells.size == 0);
         }
 
         /// <summary>

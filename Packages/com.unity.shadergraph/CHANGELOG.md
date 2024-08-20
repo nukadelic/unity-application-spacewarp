@@ -1,4 +1,5 @@
 # Changelog
+
 All notable changes to this package are documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
@@ -8,6 +9,34 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 Version Updated
 The version number for this package has increased due to a version update of a related graphics package.
+
+## [16.0.5] - 2024-04-03
+
+This version is compatible with Unity 2023.2.18f1.
+
+Version Updated
+The version number for this package has increased due to a version update of a related graphics package.
+
+## [16.0.4] - 2023-12-21
+
+This version is compatible with Unity 2023.2.5f1.
+
+Version Updated
+The version number for this package has increased due to a version update of a related graphics package.
+
+## [16.0.3] - 2023-09-26
+
+This version is compatible with Unity 2023.2.0b12.
+
+### Changed
+- Addressed an issue where certain operations were taking too long as a result of graph concretization.
+
+### Fixed
+- Fixed an issue where *Save* and *Save As* hotkeys weren't being registered by Shadergraph Editor window.
+- Addressed minor usability issues with Custom Function nodes.
+- Addressed issue where adding a dropdown property type to a newly created subgraph did not propagate to other open Shadergraph Editor windows.
+- Removed an invalid character from imported material sub asset.
+- Fixed an issue where there was a major slowdown if you tried to add nodes to large shader graphs.
 
 ## [16.0.2] - 2023-06-28
 

@@ -457,6 +457,11 @@ namespace UnityEngine.Rendering.Universal
         }
 
         /// <summary>
+        /// True if the last camera in the stack outputs to an HDR screen
+        /// </summary>
+        internal bool stackLastCameraOutputToHDR;
+
+        /// <summary>
         /// HDR Display information about the current display this camera is rendering to.
         /// </summary>
         public HDROutputUtils.HDRDisplayInformation hdrDisplayInformation
@@ -616,6 +621,11 @@ namespace UnityEngine.Rendering.Universal
         /// True if post-processing is enabled for this camera.
         /// </summary>
         public bool postProcessEnabled;
+
+        /// <summary>
+        /// True if post-processing is enabled for any camera in this camera's stack.
+        /// </summary>
+        internal bool stackAnyPostProcessingEnabled;
 
         /// <summary>
         /// Provides set actions to the renderer to be triggered at the end of the render loop for camera capture.
@@ -937,6 +947,10 @@ namespace UnityEngine.Rendering.Universal
         public static readonly int inverseCameraProjectionMatrix = Shader.PropertyToID("unity_CameraInvProjection");
         public static readonly int worldToCameraMatrix = Shader.PropertyToID("unity_WorldToCamera");
         public static readonly int cameraToWorldMatrix = Shader.PropertyToID("unity_CameraToWorld");
+
+        public static readonly int shadowBias = Shader.PropertyToID("_ShadowBias");
+        public static readonly int lightDirection = Shader.PropertyToID("_LightDirection");
+        public static readonly int lightPosition = Shader.PropertyToID("_LightPosition");
 
         public static readonly int cameraWorldClipPlanes = Shader.PropertyToID("unity_CameraWorldClipPlanes");
 
@@ -1441,19 +1455,6 @@ namespace UnityEngine.Rendering.Universal
             desc.bindMS = false;
             desc.useDynamicScale = camera.allowDynamicResolution;
 
-            // The way RenderTextures handle MSAA fallback when an unsupported sample count of 2 is requested (falling back to numSamples = 1), differs fom the way
-            // the fallback is handled when setting up the Vulkan swapchain (rounding up numSamples to 4, if supported). This caused an issue on Mali GPUs which don't support
-            // 2x MSAA.
-            // The following code makes sure that on Vulkan the MSAA unsupported fallback behaviour is consistent between RenderTextures and Swapchain.
-            // TODO: we should review how all backends handle MSAA fallbacks and move these implementation details in engine code.
-            if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Vulkan)
-            {
-                // if the requested number of samples is 2, and the supported value is 1x, it means that 2x is unsupported on this GPU.
-                // Then we bump up the requested value to 4.
-                if (desc.msaaSamples == 2 && SystemInfo.GetRenderTextureSupportedMSAASampleCount(desc) == 1)
-                    desc.msaaSamples = 4;
-            }
-
             // check that the requested MSAA samples count is supported by the current platform. If it's not supported,
             // replace the requested desc.msaaSamples value with the actual value the engine falls back to
             desc.msaaSamples = SystemInfo.GetRenderTextureSupportedMSAASampleCount(desc);
@@ -1815,9 +1816,9 @@ namespace UnityEngine.Rendering.Universal
     }
 
     // Internal class to detect and cache runtime platform information.
-    // TODO: refine the logic to provide platform abstraction. Eg, we should devide platforms based on capabilities and perf budget.
-    // TODO: isXRMobile is a bad catagory. Alignment and refactor needed.
-    // TODO: Compress all the query data into "isXRMobile" style bools and enums.
+    // TODO: refine the logic to provide platform abstraction. Eg, we should divide platforms based on capabilities and perf budget.
+    // TODO: isXRMobile is a bad category. Alignment and refactor needed.
+    // TODO: Compress all the query data into "isXRMobile" style booleans and enums.
     internal static class PlatformAutoDetect
     {
         /// <summary>
@@ -1826,16 +1827,19 @@ namespace UnityEngine.Rendering.Universal
         internal static void Initialize()
         {
             bool isRunningMobile = false;
-#if ENABLE_VR && ENABLE_VR_MODULE
-#if PLATFORM_WINRT || PLATFORM_ANDROID
-            isRunningMobile = IsRunningXRMobile();
-#endif
-#endif
+            #if ENABLE_VR && ENABLE_VR_MODULE
+                #if PLATFORM_WINRT || PLATFORM_ANDROID
+                    isRunningMobile = IsRunningXRMobile();
+                #endif
+            #endif
+
             isXRMobile = isRunningMobile;
+            isShaderAPIMobileDefined = GraphicsSettings.HasShaderDefine(BuiltinShaderDefine.SHADER_API_MOBILE);
+            isSwitch = Application.platform == RuntimePlatform.Switch;
         }
 
 #if ENABLE_VR && ENABLE_VR_MODULE
-#if PLATFORM_WINRT || PLATFORM_ANDROID
+    #if PLATFORM_WINRT || PLATFORM_ANDROID
         // XR mobile platforms are not treated as dedicated mobile platforms in Core. Handle them specially here. (Quest and HL).
         private static List<XR.XRDisplaySubsystem> displaySubsystemList = new List<XR.XRDisplaySubsystem>();
         private static bool IsRunningXRMobile()
@@ -1854,12 +1858,40 @@ namespace UnityEngine.Rendering.Universal
             }
             return false;
         }
-#endif
+    #endif
 #endif
 
         /// <summary>
         /// If true, the runtime platform is an XR mobile platform.
         /// </summary>
-        static internal bool isXRMobile { get; private set; } = false;
+        internal static bool isXRMobile { get; private set; } = false;
+
+        /// <summary>
+        /// If true, then SHADER_API_MOBILE has been defined in URP Shaders.
+        /// </summary>
+        internal static bool isShaderAPIMobileDefined { get; private set; } = false;
+
+        /// <summary>
+        /// If true, then the runtime platform is set to Switch.
+        /// </summary>
+        internal static bool isSwitch { get; private set; } = false;
+
+        /// <summary>
+        /// Gives the SH evaluation mode when set to automatically detect.
+        /// </summary>
+        /// <param name="mode">The current SH evaluation mode.</param>
+        /// <returns>Returns the SH evaluation mode to use.</returns>
+        internal static ShEvalMode ShAutoDetect(ShEvalMode mode)
+        {
+            if (mode == ShEvalMode.Auto)
+            {
+                if (isXRMobile || isShaderAPIMobileDefined || isSwitch)
+                    return ShEvalMode.PerVertex;
+                else
+                    return ShEvalMode.PerPixel;
+            }
+
+            return mode;
+        }
     }
 }

@@ -72,11 +72,14 @@ namespace UnityEngine
 
         static void AddEntriesWithoutCheck(SerializedProperty spAxes, List<InputManagerEntry> newEntries)
         {
+            if (newEntries.Count == 0)
+                return;
+
             int endOfCurrentInputList = spAxes.arraySize;
             spAxes.arraySize = endOfCurrentInputList + newEntries.Count;
-
-            SerializedProperty spAxis = spAxes.GetArrayElementAtIndex(endOfCurrentInputList - 1);
-            spAxis.Next(false);
+            // Assignment to spAxes.arraySize resizes the spAxes array to at least 1 larger than it used to be, and 
+            // therefore it is OK to use endOfCurrentInputList ("one-past-end of previous size") to get the array iterator.
+            SerializedProperty spAxis = spAxes.GetArrayElementAtIndex(endOfCurrentInputList);
             for (int i = 0; i < newEntries.Count; ++i, spAxis.Next(false))
                 CopyEntry(spAxis, newEntries[i]);
         }
@@ -86,6 +89,9 @@ namespace UnityEngine
         {
             int size = spAxes.arraySize;
             List<(string name, InputManagerEntry.Kind kind)> result = new List<(string name, InputManagerEntry.Kind kind)>(size);
+
+            if (size == 0)
+                return result;
 
             SerializedProperty spAxis = spAxes.GetArrayElementAtIndex(0);
             for (int i = 0; i < size; ++i, spAxis.Next(false))
@@ -108,24 +114,43 @@ namespace UnityEngine
                 .ToList();
         }
 
+        static SerializedObject GetInputManagerSO()
+        {
+            var assets = AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/InputManager.asset");
+
+            // Potentially there are multiple objects inside the Asset, we need to make sure we only grab the correct one.
+            foreach (var obj in assets)
+            {
+                // Check the asset name is correct
+                if (obj != null && obj.name == "InputManager")
+                {
+                    // There is an issue where multiple objects can be named InputManager for a
+                    // period when they are added to the file, even if they are given unique names.
+                    // In the editor we also check the type is InputManager to work around this, however
+                    // that type is not available here. So instead we inspect the contents to confirm it's
+                    // the object we expect.
+                    var soInputManager = new SerializedObject(obj);
+                    var spAxes = soInputManager.FindProperty("m_Axes");
+                    if (spAxes != null)
+                        return soInputManager;
+                }
+            }
+            return null;
+        }
+
         public static void RegisterInputs(List<InputManagerEntry> entries)
         {
 #if ENABLE_INPUT_SYSTEM && ENABLE_INPUT_SYSTEM_PACKAGE
             Debug.LogWarning("Trying to add entry in the legacy InputManager but using InputSystem package. Skipping.");
             return;
 #else
-
             // Grab reference to input manager
-            var assets = AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/InputManager.asset");
+            var soInputManager = GetInputManagerSO();
 
             // Temporary fix. This happens some time with HDRP init when it's called before asset database is initialized (probably related to package load order).
-            if (assets.Length == 0)
+            if (soInputManager == null)
                 return;
 
-            var inputManager = assets[0];
-
-            // Wrap in serialized object to access c++ fields
-            var soInputManager = new SerializedObject(inputManager);
             var spAxes = soInputManager.FindProperty("m_Axes");
 
             // At this point, we assume that entries in spAxes are already unique.
