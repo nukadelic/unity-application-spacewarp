@@ -6,7 +6,7 @@ Shader "ASW/UnlitTMP"
     Properties
     {
         [MainTexture] _BaseMap("Texture", 2D) = "white" {}
-        [MainColor] _BaseColor("Color", Color) = (1, 1, 1, 1)
+        [MainColor] _BaseColor("Color", Color) = (0, 0, 0, 1)
         _Cutoff("AlphaCutout", Range(0.0, 1.0)) = 0.5
 
         // BlendMode
@@ -152,13 +152,27 @@ Shader "ASW/UnlitTMP"
                 float2 uv = input.uv;
                 float4 texColor = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, uv);
                 
+#if 1
+                // https://drewcassidy.me/2020/06/26/sdf-antialiasing/
+                // sdf distance from edge (scalar)
+                float dist = ( _Cutoff - texColor.a );
+                // sdf distance per pixel (gradient vector)
+                float2 ddist = float2(ddx(dist), ddy(dist));
+                // distance to edge in pixels (scalar)
+                float pixelDist = dist / length(ddist);
+                float a = 1 - saturate( 0.5 - pixelDist );
+#else
                 float a = step( texColor.a, _Cutoff );
-
+#endif
                 float3 texColor_rgb = float3( a , a , a );
 
-                float3 color = _BaseColor.rgb * input.color_vert.rgb * ( 1 - a );
-                float alpha = _BaseColor.a * input.color_vert.a;
+                // use basecolor as background color instead 
+                float4 background = _BaseColor.rgba;
 
+                float3 color = input.color_vert.rgb * ( 1 - a );
+                float alpha = input.color_vert.a;
+
+                //clip( 1 - a - _Cutoff );
                 AlphaDiscard( 1 - a , _Cutoff );
 
                 #if defined(_ALPHAPREMULTIPLY_ON)
@@ -191,7 +205,7 @@ Shader "ASW/UnlitTMP"
 
                 float emission = 0;
 
-                float4 finalColor = float4( color + emission, alpha );
+                float4 finalColor = lerp( float4( color + emission, alpha ) , background , a );
 
 
             #if defined(_SCREEN_SPACE_OCCLUSION) && !defined(_SURFACE_TYPE_TRANSPARENT)

@@ -16,7 +16,7 @@ Project is preconfigured with ASW for the Oculus Quest 2 &amp; 3 using a custom 
 
 * urp-16.0.6 [2bc26a7](https://github.com/nukadelic/unity-application-spacewarp/commit/2bc26a7ac7c6ac8cde24a8a659a9a1439b50fa1a)
 
-* TextMeshPro - `ASW/UnlitTMP` shader - only works in opaque mode - examples included in `SampleScene.unity`
+* TextMeshPro - `ASW/UnlitTMP` shader - only works in opaque mode - examples included in `SampleScene.unity` ( now with sdf antialiasing - apparent against the material main color as the background when clipping is turned off )
 
 ### Update (Novermber-2023)
 
