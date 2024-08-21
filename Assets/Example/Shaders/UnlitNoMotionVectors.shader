@@ -249,7 +249,7 @@ Shader "Universal Render Pipeline/Unlit No MotionVectors"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/UnlitMetaPass.hlsl"
             ENDHLSL
         }
-        /*
+        
         Pass
         {
             Name "MotionVectors"
@@ -265,7 +265,6 @@ Shader "Universal Render Pipeline/Unlit No MotionVectors"
             #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ObjectMotionVectors.hlsl"
             ENDHLSL
         }
-        */
     }
 
     FallBack "Hidden/Universal Render Pipeline/FallbackError"

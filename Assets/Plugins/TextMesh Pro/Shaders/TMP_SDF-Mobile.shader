@@ -247,8 +247,8 @@ SubShader {
 
 	Pass
 	{
-		Name "MotionVectors"
-		Tags{ "LightMode" = "MotionVectors"}
+		Name "OculusMotionVectors"
+		Tags{ "LightMode" = "OculusMotionVectors"}
 		Tags { "RenderType" = "Opaque" }
 
 		ZWrite[_ZWrite]

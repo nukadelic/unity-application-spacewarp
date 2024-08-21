@@ -1,7 +1,7 @@
 // based on : https://github.com/Oculus-VR/Unity-Graphics/blob/4f6daf0a988e86df35739c5fddbf6fe9bf9bb773/com.unity.render-pipelines.universal/Shaders/Unlit.shader
 // Edit below line 187 to make your own fragment shader 
 
-Shader "ASW/UnlitTemplate" 
+Shader "ASW/UnlitTMP" 
 {
     Properties
     {
@@ -94,6 +94,7 @@ Shader "ASW/UnlitTemplate"
 
             struct Attributes
             {
+                float4 vert_color : COLOR;
                 float4 positionOS : POSITION;
                 float2 uv : TEXCOORD0;
 
@@ -107,6 +108,7 @@ Shader "ASW/UnlitTemplate"
 
             struct Varyings
             {
+                float4 color_vert : COLOR; 
                 float2 uv : TEXCOORD0;
                 float fogCoord : TEXCOORD1;
                 float4 positionCS : SV_POSITION;
@@ -147,12 +149,17 @@ Shader "ASW/UnlitTemplate"
                 UNITY_SETUP_INSTANCE_ID(input);
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
 
-                half2 uv = input.uv;
-                half4 texColor = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, uv);
-                half3 color = texColor.rgb * _BaseColor.rgb;
-                half alpha = texColor.a * _BaseColor.a;
+                float2 uv = input.uv;
+                float4 texColor = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, uv);
+                
+                float a = step( texColor.a, _Cutoff );
 
-                AlphaDiscard(alpha, _Cutoff);
+                float3 texColor_rgb = float3( a , a , a );
+
+                float3 color = _BaseColor.rgb * input.color_vert.rgb * ( 1 - a );
+                float alpha = _BaseColor.a * input.color_vert.a;
+
+                AlphaDiscard( 1 - a , _Cutoff );
 
                 #if defined(_ALPHAPREMULTIPLY_ON)
                 color *= alpha;
@@ -170,21 +177,21 @@ Shader "ASW/UnlitTemplate"
                     #if (defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2))
                     float viewZ = -input.fogCoord;
                     float nearToFarZ = max(viewZ - _ProjectionParams.y, 0);
-                    half fogFactor = ComputeFogFactorZ0ToFar(nearToFarZ);
+                    float fogFactor = ComputeFogFactorZ0ToFar(nearToFarZ);
                     #else
-                    half fogFactor = 0;
+                    float fogFactor = 0;
                     #endif
                 #else
-                half fogFactor = input.fogCoord;
+                float fogFactor = input.fogCoord;
                 #endif
 
-                // half4 finalColor = UniversalFragmentUnlit(inputData, color, alpha);
+                // float4 finalColor = UniversalFragmentUnlit(inputData, color, alpha);
                 
                 // UniversalFragmentUnlit method from this file : #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Unlit.hlsl"
 
                 float emission = 0;
 
-                half4 finalColor = half4( color + emission, alpha );
+                float4 finalColor = float4( color + emission, alpha );
 
 
             #if defined(_SCREEN_SPACE_OCCLUSION) && !defined(_SURFACE_TYPE_TRANSPARENT)
@@ -201,6 +208,9 @@ Shader "ASW/UnlitTemplate"
             Varyings UnlitPassVertex( Attributes input )
             {
                 Varyings output = (Varyings)0;
+
+                float4 color_value = input.vert_color;
+                output.color_vert = color_value;
 
                 UNITY_SETUP_INSTANCE_ID(input);
                 UNITY_TRANSFER_INSTANCE_ID(input, output);

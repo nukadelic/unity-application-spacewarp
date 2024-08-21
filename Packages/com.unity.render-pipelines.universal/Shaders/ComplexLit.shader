@@ -477,6 +477,24 @@ Shader "Universal Render Pipeline/Complex Lit"
 
         Pass
         {
+            Name "OculusMotionVectors"
+            Tags{ "LightMode" = "OculusMotionVectors"}
+            Tags { "RenderType" = "Opaque" }
+
+            ZWrite[_ZWrite]
+            Cull[_Cull]
+
+            HLSLPROGRAM
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/OculusMotionVectorCore.hlsl"
+
+            #pragma vertex vert
+            #pragma fragment frag
+
+            ENDHLSL
+        }
+        
+        Pass
+        {
             Name "MotionVectors"
             Tags { "LightMode" = "MotionVectors" }
             ColorMask RG

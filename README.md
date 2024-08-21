@@ -16,6 +16,12 @@ Project is preconfigured with ASW for the Oculus Quest 2 &amp; 3 using a custom 
 
 * urp-16.0.6 [2bc26a7](https://github.com/nukadelic/unity-application-spacewarp/commit/2bc26a7ac7c6ac8cde24a8a659a9a1439b50fa1a)
 
+* TextMeshPro - `ASW/UnlitTMP` shader - only works in opaque mode - examples included in `SampleScene.unity`
+
+### Update (Novermber-2023)
+
+* TextMeshPro motion vector support - should work great for free floating / fast moving text items like subtitles
+
 ### Update (October-2023)
 
 * Oculus motion vectors for urp-16.0.3 - [15e458d](https://github.com/nukadelic/unity-application-spacewarp/commit/15e458db126a066e68436b531ab3e6d0b9024693)
