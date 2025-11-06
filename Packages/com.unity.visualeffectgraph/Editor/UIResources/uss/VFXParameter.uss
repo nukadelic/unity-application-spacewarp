@@ -1,0 +1,155 @@
+
+VFXParameterUI.node > #node-border > #title
+{
+    font-size: 11px;
+    height: auto;
+    padding-left: 8px;
+}
+
+VFXParameterUI.node.superCollapsed > #node-border > #title > #title-label
+{
+    margin-right:0;
+    margin-left:0;
+    margin-top:0;
+    margin-bottom:0;
+    padding-right:0;
+    padding-left:0;
+    padding-top:0;
+    padding-bottom:0;
+    font-size: 11px;
+}
+
+VFXParameterUI.node > #node-border > #title > #pill
+{
+    background-color: #303030;
+    border-radius: 12px;
+    flex-direction:row;
+    padding-left: 8px;
+    margin: 4px 8px 4px 0;
+}
+
+VFXParameterUI.node > #selection-border {
+    border-radius: 12px;
+}
+
+VFXParameterUI.node.hovered > #selection-border
+{
+    background-color:rgba(255,128,0,0.4);
+    border-color: rgba(255,128,0,1);
+    border-width: 2px;
+}
+
+VFXParameterUI.node:hover > #selection-border
+{
+    border-color: #44C0FF;
+    border-width: 1px;
+}
+
+VFXParameterUI.node > #node-border
+{
+    border-radius: 10px;
+    background-color: #383838;
+}
+
+VFXParameterUI.node.superCollapsed > #node-border
+{
+    flex-direction: row;
+}
+
+VFXParameterUI.node.superCollapsed.output > #node-border
+{
+    flex-direction: row-reverse;
+}
+
+VFXParameterUI.node.superCollapsed > #selection-border
+{
+    border-radius: 12px;
+}
+
+VFXParameterUI.node.superCollapsed #pill {
+    padding-right: 16px;
+}
+
+VFXParameterUI.node.superCollapsed > #node-border > #title
+{
+    background-color:rgba(0,0,0,0);
+    margin-right: 16px;
+}
+
+VFXParameterUI.node.superCollapsed.output > #node-border > #title
+{
+    margin-left: 16px;
+    margin-right: 0;
+}
+
+VFXParameterUI.node.superCollapsed > #node-border > #contents > #top > #output
+{
+    justify-content:space-around;
+    background-color:rgba(0,0,0,0);
+    align-items:flex-end;
+}
+
+VFXParameterUI.node.superCollapsed > #node-border > #contents > #top > #input
+{
+    justify-content:space-around;
+    background-color:rgba(0,0,0,0);
+
+}
+
+VFXParameterUI.node.superCollapsed > #node-border > #contents .VFXDataAnchor.Output,
+VFXParameterUI.node.superCollapsed > #node-border > #contents .VFXDataAnchor.Input
+{
+    border-width: 0;
+    position:Absolute;
+    top: 14px; /*hard coding the position so that edge are at the right height*/
+}
+
+VFXParameterUI.node.superCollapsed > #node-border > #contents .VFXDataAnchor.Output #connector,
+VFXParameterUI.node.superCollapsed > #node-border > #contents .VFXDataAnchor.Input #connector {
+    opacity: 0;
+}
+
+VFXParameterUI.node.superCollapsed > #node-border > #contents .VFXDataAnchor.Output.first #connector,
+VFXParameterUI.node.superCollapsed > #node-border > #contents .VFXDataAnchor.Input.first #connector {
+    opacity: 1;
+}
+
+VFXParameterUI.node.superCollapsed > #node-border > #contents .VFXDataAnchor.Output #type,
+VFXParameterUI.node.superCollapsed > #node-border > #contents .VFXDataAnchor.Input #type,
+VFXParameterUI.node.superCollapsed > #node-border > #contents .VFXDataAnchor.Output #line,
+VFXParameterUI.node.superCollapsed > #node-border > #contents .VFXDataAnchor.Input #line
+{
+    display: none;
+}
+
+VFXParameterUI.node > #node-border > #contents > #top
+{
+    flex:1 0 auto;
+}
+
+VFXParameterUI.node > #node-border > #contents #divider
+{
+    background-color:rgba(0,0,0,0);
+    border-color:rgba(0,0,0,0);
+    border-bottom-width:0;
+}
+
+VFXParameterUI.node > #node-border > #title > #pill > #exposed-icon
+{
+    align-self:center;
+    width: 6px;
+    height: 6px;
+}
+
+VFXParameterUI.node.exposed > #node-border > #title > #pill > #exposed-icon
+{
+    --unity-image: url("project:///Packages/com.unity.visualeffectgraph/Editor/UIResources/VFX/exposed-dot.png");
+}
+
+.node > #node-border > #title #collapse-button {
+    margin: 2px 8px 2px 4px;
+}
+
+.node.superCollapsed > #node-border > #title #collapse-button {
+    display: none;
+}

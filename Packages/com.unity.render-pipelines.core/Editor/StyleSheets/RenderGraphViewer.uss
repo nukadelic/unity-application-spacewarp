@@ -1,0 +1,610 @@
+:root {
+    --header-container-height: 24px;
+    --resource-column-width: 220px;
+    --resource-list-icon-size: 16px;
+    --resource-grid-icon-size: 16px;
+    --pass-width: 26px;
+    --pass-list-height: 180px;
+    --pass-list-tilted-label-length: 200px;
+    --pass-title-allowance-margin: 120px; /* used to reserve enough space so that rotated pass names stay visible */
+    --pass-title-allowance-margin-with-scrollbar: 133px;
+    --dependency-row-height: 30px;
+    --dependency-block-height: 26px;
+    --dependency-block-width: var(--pass-width);
+    --hover-overlay-offset-top: 204px;
+
+    --side-panel-width: 380px;
+    --side-panel-pass-title-width: 330px; /* adjust if changing --side-panel-width */
+    --side-panel-attachment-label-width: 298px; /* adjust if changing --side-panel-width */
+
+    flex-grow: 1;
+    flex-direction: column;
+    min-width: 600px;
+    background-color: var(--main-background-color);
+}
+
+#content-container {
+    height: 100%;
+    margin-left: 10px;
+    flex-direction: row;
+}
+
+#main-container {
+    flex-direction: column;
+}
+
+#panel-container {
+    flex-direction: column;
+    width: var(--side-panel-width);
+    min-width: 280px;
+    flex-shrink: 0;
+    background-color: var(--side-panel-background-color);
+}
+
+/* Header */
+
+#header-container {
+    flex-direction: row;
+    height: var(--header-container-height);
+    min-height: 30px;
+    align-items: center;
+    justify-content: flex-start;
+    border-width: 0px 0 1px 0;
+    border-color: black;
+}
+
+#header-container .unity-base-popup-field__label {
+    min-width: auto;
+}
+
+#header-container PopupTextElement {
+    flex-grow: 0;
+}
+
+#capture-button {
+    width: 28px;
+    height: 28px;
+    background-size: 16px;
+    border-width: 0px 1px 0px 0;
+    border-radius: 0;
+    border-color: var(--unity-colors-app_toolbar-background);
+    margin: 0;
+    background-color: var(--main-background-color);
+}
+
+#current-graph-dropdown {
+    max-width: 200px;
+}
+
+#current-execution-dropdown {
+    max-width: 300px;
+}
+
+#header-container DropdownField .unity-base-popup-field__text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Passes */
+
+#pass-list-scroll-view {
+    min-height: var(--pass-list-height);
+    flex-direction: column;
+}
+
+#pass-list {
+    margin-left: var(--resource-column-width);
+    flex-direction: row;
+    height: var(--pass-list-height);
+    align-items: flex-end;
+    flex-shrink: 0;
+    padding-right: var(--pass-title-allowance-margin-with-scrollbar);
+}
+
+#pass-list-scroll-view #unity-content-container {
+    flex-direction: row;
+}
+
+#pass-list-width-helper {
+    width: var(--pass-title-allowance-margin);
+}
+
+.pass-list__item {
+    position: absolute;
+    min-width: var(--pass-width);
+    width: var(--pass-width);
+    justify-content: center;
+    flex-direction: column;
+}
+
+.pass-list__item .pass-title {
+    width: var(--pass-list-tilted-label-length);
+    top: -50px;
+    left: -17px;
+    rotate: -45deg;
+    margin-bottom: 10px;
+    height: var(--pass-width);
+}
+
+.pass-list__item .pass-block {
+    margin-top: 2px;
+    height: 15px;
+    border-width: 0.5px; /* 1px width looks too wide for some reason? */
+    border-radius: 2px;
+    border-color: var(--pass-block-border-color);
+}
+
+.pass-block--culled {
+    background-color: var(--pass-block-color--culled);
+}
+
+.pass-block--async {
+    background-color: var(--pass-block-color--async);
+}
+
+
+.pass-list__item .pass-merge-indicator {
+    background-color: var(--merged-pass-accent-color);
+    height: 3px;
+    margin-bottom: 1px;
+    margin-top: 3px;
+    visibility: hidden;
+}
+
+.pass-block.pass--highlight {
+    background-color: var(--pass-block-color--highlight);
+}
+
+.pass-block.pass--highlight-border {
+    border-color: var(--pass-block-color--highlight);
+}
+
+.pass-title.pass--highlight {
+    color: var(--pass-block-text-color--highlight);
+    -unity-font-style: bold;
+}
+
+.pass-title.pass--hover-highlight {
+    color: var(--pass-block-text-color--highlight);
+    -unity-font-style: bold;
+}
+
+.pass-block.pass-compatibility-message-indicator {
+    background-color: var(--native-pass-accent-color);
+    border-color: var(--pass-block-border-color);
+}
+
+.pass-block.pass-compatibility-message-indicator--anim {
+    /* compatible pass animation transitions */
+    transition-property: background-color;
+    transition-duration: 0.7s;
+    transition-timing-function: ease-in-out;
+}
+
+.pass-block.pass-compatibility-message-indicator--compatible {
+    background-color: var(--native-pass-accent-compatible-color);
+}
+
+.pass-block.pass-synchronization-message-indicator {
+    background-color: var(--pass-block-color--async);
+}
+
+.pass-block.pass-block-script-link {
+    /*-unity-background-scale-mode:scale-to-fit;*/
+    border-width: 2px;
+    margin: -1px;
+    padding: 0;
+}
+
+#pass-list-corner-occluder {
+    position: absolute;
+    min-width: var(--resource-column-width);
+    min-height: var(--pass-list-height);
+    background-color: var(--main-background-color);
+}
+
+/* Resource container */
+
+#resource-container {
+    flex-direction: row;
+    margin-top: 5px;
+    height: 100%;
+}
+
+#resource-container ScrollView {
+    flex-grow: 1;
+}
+
+/* Grid lines */
+
+#grid-line-container {
+    position: absolute;
+}
+
+.grid-line {
+    position: absolute;
+    border-color: var(--grid-line-color);
+    border-left-width: 2px;
+    width: 0px;
+    flex-grow: 1;
+}
+
+.grid-line--highlight {
+    border-color: var(--grid-line-color--hover);
+}
+
+/* Resource list */
+
+#resource-list-scroll-view {
+    flex-direction: column;
+    margin-top: 6px;
+    width: var(--resource-column-width);
+    min-width: var(--resource-column-width);
+    max-width: var(--resource-column-width);
+    margin-right: 0;
+    margin-bottom: 12px;
+}
+
+.resource-list__item {
+    height: var(--dependency-row-height);
+    min-width: var(--resource-column-width);
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.resource-list__item VisualElement {
+    flex-direction: row;
+}
+
+.resource-list__item Label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-left: 4px;
+}
+
+.resource-list__item .resource-icon-container {
+    align-items: center;
+    flex-direction: row;
+    margin-right: 6px;
+    flex: none;
+}
+
+.resource-icon {
+    width: var(--resource-list-icon-size);
+    height: var(--resource-list-icon-size);
+}
+
+#resource-grid .resource-icon {
+    width: var(--resource-grid-icon-size);
+    height: var(--resource-grid-icon-size);
+    margin-top: 5px;
+    align-self: center;
+}
+
+.resource-list__item--highlight {
+    -unity-font-style: bold;
+    color: var(--pass-block-color--highlight);
+}
+
+/* Resource grid */
+
+#resource-grid-scroll-view .unity-scroll-view__content-container {
+    margin: 0px;
+}
+
+.resource-list-padding-item {
+    height: 13px;
+}
+
+#resource-grid {
+    flex-direction: column;
+    margin-top: 6px;
+    margin-bottom: 6px;
+    padding-right: var(--pass-title-allowance-margin);
+}
+
+#resource-grid-scroll-view.content-pan VisualElement {
+    cursor: pan;
+}
+
+.resource-grid__row {
+    height: var(--dependency-row-height);
+    flex-direction: row;
+}
+
+.resource-helper-line {
+    height: var(--dependency-row-height);
+    flex-shrink: 0;
+    -unity-background-image-tint-color: var(--resource-helper-line-color);
+    background-image: url("../Icons/RenderGraphViewer/dash.png");
+    background-repeat: repeat-x;
+    background-size: 8px 8px;
+    margin-top: 1px;
+}
+
+.resource-helper-line--highlight {
+    -unity-background-image-tint-color: var(--resource-helper-line-color--hover);
+}
+
+.usage-range-block {
+    margin-top: 2px;
+    background-color: var(--usage-range-color);
+    height: var(--dependency-block-height);
+}
+
+.usage-range-block--highlight {
+    position: absolute;
+    border-width: 1px;
+    border-color: var(--pass-block-color--highlight);
+    height: 27px;
+    margin-top: 8px;
+}
+
+.dependency-block {
+    position: absolute;
+    margin-top: 2px;
+    width: var(--dependency-block-width);
+    min-width: var(--dependency-block-width);
+    height: var(--dependency-block-height);
+    background-color: var(--main-background-color);
+}
+
+.dependency-block-read {
+    background-color: var(--resource-read-color);
+}
+
+.dependency-block-write {
+    background-color: var(--resource-write-color);
+}
+
+.dependency-block-readwrite {
+    /* foreground color is set in code when rendering the triangle */
+    background-color: var(--resource-write-color);
+}
+
+#hover-overlay {
+    /*display: none; /* for debugging */
+    /*background-color: rgba(255, 0, 0, 0.2); /* for debugging */
+    position: absolute;
+}
+
+#hover-overlay.content-pan {
+    cursor: pan;
+}
+
+.resource-grid-focus-overlay {
+    background-color: rgba(10, 10, 10, 0.2);
+    position: absolute;
+}
+
+#empty-state-message {
+    flex-direction: row;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    -unity-text-align: middle-center;
+}
+
+#empty-state-message > TextElement {
+    max-width: 260px;
+}
+
+/* Resource & pass list panel */
+
+#panel-resource-list {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-height: 18px;
+    background-color: var(--side-panel-background-color);
+}
+
+#panel-resource-list-scroll-view {
+    min-height: 30px;
+}
+
+#panel-pass-list {
+    flex-grow: 0;
+    flex-shrink: 1;
+    min-height: 18px;
+    border-bottom-width: 0;
+    background-color: var(--side-panel-background-color);
+}
+
+#panel-pass-list-scroll-view {
+    min-height: 30px;
+}
+
+#panel-container .header-foldout {
+    margin: 0; /* Counteract built-in margins inside HeaderFoldout */
+}
+
+#panel-container .header-foldout > Toggle {
+    padding: 0 0 0 8px; /* Counteract built-in margins inside HeaderFoldout */
+}
+
+#panel-container .header-foldout > #unity-content {
+    margin: 0 5px 0 3px; /* Counteract built-in margins inside HeaderFoldout */
+}
+
+#empty-contents-message {
+    flex-direction: row;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    -unity-text-align: middle-center;
+}
+
+#panel-container .panel-list__item {
+    margin-left: 6px;
+    background-color: var(--side-panel-background-color);
+    /* selection animation */
+    transition-property: background-color;
+    transition-duration: 0.7s;
+    transition-timing-function: ease-in-out;
+}
+
+#panel-container .panel-list__item--selection-animation {
+    background-color: var(--unity-colors-highlight-background-hover-lighter);
+}
+
+.panel-list__item .resource-icon-container {
+    align-items: center;
+    flex-direction: row;
+    margin-right: 4px;
+    flex: none;
+}
+
+.panel-list__item .resource-icon--imported {
+    width: var(--resource-list-icon-size);
+    height: var(--resource-list-icon-size);
+}
+
+.panel-list__item .resource-icon--global {
+    width: var(--resource-list-icon-size);
+    height: var(--resource-list-icon-size);
+}
+
+.panel-list__item > Label {
+    -unity-font-style: normal;
+    margin-top: 2px;
+    color: var(--unity-colors-default-text);
+}
+
+.panel-list__item .unity-foldout__text {
+    color: var(--unity-colors-default-text);
+}
+
+.panel-list__line-break {
+    border-top-width: 2px;
+    border-color: var(--side-panel-item-border-color);
+    margin-left: -15px; /* counteract foldout indent */
+    margin-top: 2px;
+    margin-bottom: 4px;
+}
+
+ScrollView TextElement {
+    margin-left: 4px;
+}
+
+.unity-foldout__text {
+    color: var(--unity-colors-default-text);
+}
+
+.custom-foldout-arrow #unity-checkmark {
+    background-image: resource("ArrowNavigationRight");
+    width: 16px;
+    height: 16px;
+    rotate: 90deg;
+}
+
+.custom-foldout-arrow > Toggle > VisualElement:checked #unity-checkmark {
+    rotate: 270deg;
+    margin-top: 2px;
+    flex-grow: 0;
+    flex-shrink: 0;
+}
+
+.panel-search-field {
+    margin-left: 6px;
+    margin-top: 6px;
+    width: 98%;
+    height: 20px;
+}
+
+/* Resource List panel only */
+
+.panel-resource-list__item {
+    margin-bottom: 6px;
+    border-radius: 4px;
+    border-width: 1px;
+    border-color: var(--side-panel-item-border-color);
+    margin-top: 4px;
+    margin-right: 4px;
+    padding-top: 4px;
+    padding-bottom: 6px;
+    -unity-font-style: bold;
+}
+
+.panel-resource-list__item .resource-icon {
+    margin-top: 1px;
+    margin-left: 2px;
+    margin-right: 6px;
+    flex-grow: 0;
+    flex-shrink: 0;
+}
+
+.panel-resource-list__item > Toggle > VisualElement {
+    max-width: 100%
+}
+
+.panel-resource-list__item > Toggle > VisualElement > Label {
+    overflow: hidden;
+    flex-shrink: 1;
+    text-overflow: ellipsis;
+}
+
+/* Pass List panel only */
+
+.panel-pass-list__item {
+    margin-top: 2px;
+}
+
+.panel-pass-list__item > Toggle > VisualElement {
+    max-width: 100%
+}
+.panel-pass-list__item > Toggle > VisualElement > Label {
+    overflow: hidden;
+    flex-shrink: 1;
+    text-overflow: ellipsis;
+}
+
+.panel-pass-list__item .sub-header-text {
+    margin-top: 6px;
+    margin-bottom: 2px;
+    -unity-font-style: bold;
+}
+
+.info-foldout {
+    border-radius: 4px;
+    border-width: 1px;
+    border-color: var(--side-panel-item-border-color);
+    margin-top: 6px;
+    margin-left: 4px;
+    margin-right: 4px;
+    padding-top: 4px;
+    padding-bottom: 6px;
+}
+
+.info-foldout > Toggle > VisualElement {
+    max-width: 100%;
+}
+
+.info-foldout > Toggle > VisualElement > Label {
+    margin-left: 6px;
+    flex-shrink: 1;
+    flex-grow: 1;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.info-foldout > TextElement {
+    -unity-font-style: normal;
+    margin-right: 4px;
+    margin-left: -6px;
+    color: var(--unity-colors-default-text);
+}
+
+.info-foldout__secondary-text {
+    margin-left: 0px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--side-panel-secondary-text-color);
+}
+
+.panel-pass-list__item > #unity-content {
+    margin-bottom: 12px;
+}
+
+

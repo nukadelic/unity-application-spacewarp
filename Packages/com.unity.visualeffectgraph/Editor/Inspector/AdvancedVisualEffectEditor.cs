@@ -1,0 +1,771 @@
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.Reflection;
+using UnityEngine;
+using UnityEngine.VFX;
+using UnityEditor.VFX.UI;
+
+using EditMode = UnityEditorInternal.EditMode;
+using UnityObject = UnityEngine.Object;
+
+namespace UnityEditor.VFX
+{
+    static class VisualEffectSerializationUtility
+    {
+        public static string GetTypeField(Type type)
+        {
+            if (type == typeof(Vector2))
+            {
+                return "m_Vector2f";
+            }
+            else if (type == typeof(Vector3))
+            {
+                return "m_Vector3f";
+            }
+            else if (type == typeof(Vector4))
+            {
+                return "m_Vector4f";
+            }
+            else if (type == typeof(Color))
+            {
+                return "m_Vector4f";
+            }
+            else if (type == typeof(AnimationCurve))
+            {
+                return "m_AnimationCurve";
+            }
+            else if (type == typeof(Gradient))
+            {
+                return "m_Gradient";
+            }
+            else if (type == typeof(Texture))
+            {
+                return "m_NamedObject";
+            }
+            else if (type == typeof(Texture2D))
+            {
+                return "m_NamedObject";
+            }
+            else if (type == typeof(Texture2DArray))
+            {
+                return "m_NamedObject";
+            }
+            else if (type == typeof(Texture3D))
+            {
+                return "m_NamedObject";
+            }
+            else if (type == typeof(Cubemap))
+            {
+                return "m_NamedObject";
+            }
+            else if (type == typeof(CubemapArray))
+            {
+                return "m_NamedObject";
+            }
+            else if (type == typeof(Mesh))
+            {
+                return "m_NamedObject";
+            }
+            else if (type == typeof(SkinnedMeshRenderer))
+            {
+                return "m_NamedObject";
+            }
+            else if (type == typeof(float))
+            {
+                return "m_Float";
+            }
+            else if (type == typeof(int))
+            {
+                return "m_Int";
+            }
+            else if (type == typeof(uint))
+            {
+                return "m_Uint";
+            }
+            else if (type == typeof(bool))
+            {
+                return "m_Bool";
+            }
+            else if (type == typeof(Matrix4x4))
+            {
+                return "m_Matrix4x4f";
+            }
+            //Debug.LogError("unknown vfx property type:"+type.UserFriendlyName());
+            return null;
+        }
+    }
+
+    [CustomEditor(typeof(VisualEffect))]
+    [CanEditMultipleObjects]
+    class AdvancedVisualEffectEditor : VisualEffectEditor, IToolModeOwner
+    {
+        new void OnEnable()
+        {
+            base.OnEnable();
+            EditMode.editModeStarted += OnEditModeStart;
+            EditMode.editModeEnded += OnEditModeEnd;
+            Selection.selectionChanged += OnHierarchySelectionChanged;
+
+            // Try to auto attach because the selection could have changed while the VFX editor was disabled
+            AutoAttachToSelection();
+
+            // Force rebuilding the parameter infos
+            VisualEffect effect = (VisualEffect)targets[0];
+
+            var asset = effect.visualEffectAsset;
+            if (asset != null && asset.GetResource() != null)
+            {
+                var graph = asset.GetResource().GetOrCreateGraph();
+
+                if (graph)
+                {
+                    graph.BuildParameterInfo();
+                }
+            }
+
+            Undo.undoRedoPerformed += OnUndoRedoPerformed;
+        }
+
+        new void OnDisable()
+        {
+            // Reset play rate only when no vfx is selected anymore
+            if (Selection.gameObjects.All(x => x.GetComponent<VisualEffect>() == null))
+            {
+                base.OnDisable();
+            }
+            else
+            {
+                OnDisableWithoutResetting();
+            }
+
+            Undo.undoRedoPerformed -= OnUndoRedoPerformed;
+
+            m_ContextsPerComponent.Clear();
+            EditMode.editModeStarted -= OnEditModeStart;
+            EditMode.editModeEnded -= OnEditModeEnd;
+            Selection.selectionChanged -= OnHierarchySelectionChanged;
+
+            DetachIfDeleted();
+        }
+
+        public override void OnInspectorGUI()
+        {
+            m_GizmoableParameters.Clear();
+            base.OnInspectorGUI();
+        }
+
+        private void OnHierarchySelectionChanged()
+        {
+            AutoAttachToSelection();
+        }
+
+        void OnEditModeStart(IToolModeOwner owner, EditMode.SceneViewEditMode mode)
+        {
+            if (mode == EditMode.SceneViewEditMode.Collider && owner == (IToolModeOwner)this)
+                OnEditStart();
+        }
+
+        void OnEditModeEnd(IToolModeOwner owner)
+        {
+            if (owner == (IToolModeOwner)this)
+                OnEditEnd();
+        }
+
+        void OnUndoRedoPerformed()
+        {
+            foreach (var contextAndGizmo in m_ContextsPerComponent)
+            {
+                contextAndGizmo.Value.context.Unprepare();
+            }
+        }
+
+
+        protected override void AssetField(VisualEffectResource resource)
+        {
+            using (new GUILayout.HorizontalScope())
+            {
+                EditorGUILayout.PropertyField(m_VisualEffectAsset, Contents.assetPath);
+
+                bool saveEnabled = GUI.enabled;
+                if (m_VisualEffectAsset.objectReferenceValue == null && !m_VisualEffectAsset.hasMultipleDifferentValues)
+                {
+                    GUI.enabled = saveEnabled;
+                    if (GUILayout.Button(Contents.createAsset, EditorStyles.miniButton, Styles.MiniButtonWidth))
+                    {
+
+                        CreateNewVFX();
+                    }
+                }
+                else
+                {
+                    GUI.enabled = saveEnabled && !m_VisualEffectAsset.hasMultipleDifferentValues && m_VisualEffectAsset.objectReferenceValue != null && resource != null; // Enabled state will be kept for all content until the end of the inspectorGUI.
+                    if (GUILayout.Button(Contents.openEditor, EditorStyles.miniButton, Styles.MiniButtonWidth))
+                    {
+                        var asset = m_VisualEffectAsset.objectReferenceValue as VisualEffectAsset;
+                        VFXViewWindow window = VFXViewWindow.GetWindow(asset, true);
+                        window.LoadAsset(asset, targets.Length > 1 ? null : target as VisualEffect);
+                    }
+                }
+                GUI.enabled = saveEnabled;
+            }
+        }
+
+        protected override void EditorModeInspectorButton()
+        {
+            EditMode.DoEditModeInspectorModeButton(
+                EditMode.SceneViewEditMode.Collider,
+                "Show Property Gizmos",
+                EditorGUIUtility.IconContent("EditCollider"),
+                this
+            );
+        }
+
+        VFXParameter GetParameter(string name, VisualEffectResource resource)
+        {
+            VisualEffect effect = (VisualEffect)target;
+
+            if (effect.visualEffectAsset == null)
+                return null;
+
+            VFXGraph graph = resource.graph as VFXGraph;
+            if (graph == null)
+                return null;
+
+            var parameter = graph.children.OfType<VFXParameter>().FirstOrDefault(t => t.exposedName == name && t.exposed == true);
+            if (parameter == null)
+                return null;
+
+            return parameter;
+        }
+
+        VFXParameter m_GizmoedParameter;
+
+        List<VFXParameter> m_GizmoableParameters = new List<VFXParameter>();
+
+        protected override void EmptyLineControl(string name, string tooltip, VFXSpace? space, int depth, VisualEffectResource resource)
+        {
+            if (depth != 1)
+            {
+                base.EmptyLineControl(name, tooltip, space, depth, resource);
+                return;
+            }
+
+            VFXParameter parameter = GetParameter(name, resource);
+
+            if (parameter == null || !VFXGizmoUtility.HasGizmo(parameter.type))
+            {
+                base.EmptyLineControl(name, tooltip, space, depth, resource);
+                return;
+            }
+
+            if (m_EditJustStarted && m_GizmoedParameter == null)
+            {
+                m_EditJustStarted = false;
+                m_GizmoedParameter = parameter;
+            }
+            m_GizmoableParameters.Add(parameter);
+            if (!m_GizmoDisplayed)
+            {
+                base.EmptyLineControl(name, tooltip, space, depth, resource);
+                return;
+            }
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Space(Styles.overrideWidth);
+            // Make the label half the width to make the tooltip
+            EditorGUILayout.LabelField(GetGUIContent(name, tooltip), EditorStyles.boldLabel, GUILayout.Width(EditorGUIUtility.labelWidth));
+            GUILayout.FlexibleSpace();
+
+            // Toggle Button
+            EditorGUI.BeginChangeCheck();
+            bool result = GUILayout.Toggle(m_GizmoedParameter == parameter, new GUIContent("Edit Gizmo"), EditorStyles.miniButton);
+
+            if (EditorGUI.EndChangeCheck() && result)
+            {
+                m_GizmoedParameter = parameter;
+            }
+
+            //GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+        }
+
+        bool m_EditJustStarted;
+        bool m_GizmoDisplayed;
+        void OnEditStart()
+        {
+            m_GizmoDisplayed = true;
+            m_EditJustStarted = true;
+        }
+
+        void OnEditEnd()
+        {
+            m_EditJustStarted = false;
+            m_GizmoedParameter = null;
+            m_GizmoDisplayed = false;
+        }
+
+        struct ContextAndGizmo
+        {
+            public GizmoContext context;
+            public VFXGizmo gizmo;
+        }
+
+        protected override void PropertyOverrideChanged()
+        {
+            foreach (var context in m_ContextsPerComponent.Values.Select(t => t.context))
+            {
+                context.Unprepare();
+            }
+        }
+
+        readonly Dictionary<VisualEffect, ContextAndGizmo> m_ContextsPerComponent = new();
+
+        ContextAndGizmo GetGizmo()
+        {
+            if (!m_ContextsPerComponent.TryGetValue((VisualEffect)target, out var context))
+            {
+                context.context = new GizmoContext(new SerializedObject(target), m_GizmoedParameter);
+                context.gizmo = VFXGizmoUtility.CreateGizmoInstance(context.context);
+                m_ContextsPerComponent.Add((VisualEffect)target, context);
+            }
+            else
+            {
+                var prevType = context.context.portType;
+                context.context.SetParameter(m_GizmoedParameter);
+                if (context.context.portType != prevType)
+                {
+                    context.gizmo = VFXGizmoUtility.CreateGizmoInstance(context.context);
+                    m_ContextsPerComponent[(VisualEffect)target] = context;
+                }
+            }
+
+            return context;
+        }
+
+        class GizmoContext : VFXGizmoUtility.Context
+        {
+            readonly SerializedObject m_SerializedObject;
+            readonly SerializedProperty m_VFXPropertySheet;
+            readonly List<Action<List<object>>> m_ValueCmdList = new();
+
+            VFXParameter m_Parameter;
+
+            public GizmoContext(SerializedObject obj, VFXParameter parameter)
+            {
+                m_SerializedObject = obj;
+                m_Parameter = parameter;
+                m_VFXPropertySheet = m_SerializedObject.FindProperty("m_PropertySheet");
+            }
+
+            public override Type portType => m_Parameter.type;
+
+            public override VFXSpace space => m_Parameter.outputSlots[0].space;
+
+            private readonly List<object> m_Stack = new();
+
+            public override object value
+            {
+                get
+                {
+                    m_SerializedObject.Update();
+                    m_Stack.Clear();
+
+                    foreach (var cmd in m_ValueCmdList)
+                    {
+                        cmd(m_Stack);
+                    }
+
+
+                    return m_Stack[0];
+                }
+            }
+
+            public override VFXGizmo.IProperty<T> RegisterProperty<T>(string memberPath)
+            {
+                var cmdList = new List<Action<List<object>, object>>();
+                bool succeeded = BuildPropertyValue<T>(cmdList, m_Parameter.type, m_Parameter.exposedName, memberPath.Split(new char[] { separator[0] }, StringSplitOptions.RemoveEmptyEntries), 0);
+                if (succeeded)
+                {
+                    return new Property<T>(m_SerializedObject, cmdList);
+                }
+
+                return VFXGizmoUtility.NullProperty<T>.defaultProperty;
+            }
+
+            void AddNewValue(List<object> l, object o, SerializedProperty vfxField, string propertyPath, string[] memberPath, int depth)
+            {
+                vfxField.InsertArrayElementAtIndex(vfxField.arraySize);
+                var newEntry = vfxField.GetArrayElementAtIndex(vfxField.arraySize - 1);
+                newEntry.FindPropertyRelative("m_Overridden").boolValue = true;
+
+                var valueProperty = newEntry.FindPropertyRelative("m_Value");
+
+                VFXSlot slot = m_Parameter.outputSlots[0];
+                for (int i = 0; i < memberPath.Length && i < depth; ++i)
+                {
+                    slot = slot.children.First(t => t.name == memberPath[i]);
+                }
+
+                l.Add(slot.value); // find the default value which is in the parameter.
+                newEntry.FindPropertyRelative("m_Name").stringValue = propertyPath;
+
+                Unprepare(); // if we set the value we'll have to regenerate the cmdList for next time.
+            }
+
+            bool BuildPropertyValue<T>(List<Action<List<object>, object>> cmdList, Type type, string propertyPath, string[] memberPath, int depth, FieldInfo specialSpacableVector3CaseField = null)
+            {
+                string field = VisualEffectSerializationUtility.GetTypeField(type);
+
+                if (field != null)
+                {
+                    var vfxField = m_VFXPropertySheet.FindPropertyRelative(field + ".m_Array");
+                    if (vfxField == null)
+                        return false;
+
+                    SerializedProperty property = null;
+                    for (int i = 0; i < vfxField.arraySize; ++i)
+                    {
+                        property = vfxField.GetArrayElementAtIndex(i);
+                        var nameProperty = property.FindPropertyRelative("m_Name").stringValue;
+                        if (nameProperty == propertyPath)
+                        {
+                            break;
+                        }
+                        property = null;
+                    }
+
+                    if (property != null)
+                    {
+                        SerializedProperty overrideProperty = property.FindPropertyRelative("m_Overridden");
+                        property = property.FindPropertyRelative("m_Value");
+                        cmdList.Add((l, o) => overrideProperty.boolValue = true);
+                    }
+                    else
+                    {
+                        cmdList.Add((l, o) =>
+                        {
+                            AddNewValue(l, o, vfxField, propertyPath, memberPath, depth);
+                        });
+
+                        if (depth < memberPath.Length)
+                        {
+                            if (!BuildPropertySubValue<T>(cmdList, type, memberPath, depth))
+                                return false;
+                        }
+                        cmdList.Add((l, o) =>
+                        {
+                            SetObjectValue(vfxField.GetArrayElementAtIndex(vfxField.arraySize - 1).FindPropertyRelative("m_Value"), l[l.Count - 1]);
+                        });
+
+                        return true;
+                    }
+
+                    if (depth < memberPath.Length)
+                    {
+                        cmdList.Add((l, o) => l.Add(GetObjectValue(property)));
+                        if (!BuildPropertySubValue<T>(cmdList, type, memberPath, depth))
+                            return false;
+                        cmdList.Add((l, o) => SetObjectValue(property, l[l.Count - 1]));
+
+                        return true;
+                    }
+                    else
+                    {
+                        var currentValue = GetObjectValue(property);
+                        if (specialSpacableVector3CaseField != null)
+                        {
+                            cmdList.Add((l, o) =>
+                            {
+                                var vector3Property = specialSpacableVector3CaseField.GetValue(o);
+                                SetObjectValue(property, vector3Property);
+                            });
+                            return true;
+                        }
+                        else if (currentValue is T)
+                        {
+                            cmdList.Add((l, o) => SetObjectValue(property, o));
+                            return true;
+                        }
+
+                        return false;
+                    }
+                }
+                else if (depth < memberPath.Length)
+                {
+                    FieldInfo subField = type.GetField(memberPath[depth]);
+                    if (subField == null)
+                        return false;
+                    return BuildPropertyValue<T>(cmdList, subField.FieldType, propertyPath + "_" + memberPath[depth], memberPath, depth + 1);
+                }
+                else if (typeof(Position) == type || typeof(Vector) == type || typeof(DirectionType) == type)
+                {
+                    if (typeof(T) != type)
+                    {
+                        return false;
+                    }
+
+                    FieldInfo vector3Field = type.GetFields(BindingFlags.Instance | BindingFlags.Public).First(t => t.FieldType == typeof(Vector3));
+                    string name = vector3Field.Name;
+                    return BuildPropertyValue<T>(cmdList, typeof(Vector3), propertyPath + "_" + name, new string[] { name }, 1, vector3Field);
+                }
+                Debug.LogError("Setting A value across multiple property is not yet supported");
+
+                return false;
+            }
+
+            bool BuildPropertySubValue<T>(List<Action<List<object>, object>> cmdList, Type type, string[] memberPath, int depth)
+            {
+                FieldInfo subField = type.GetField(memberPath[depth]);
+                if (subField == null)
+                    return false;
+
+                depth++;
+                if (depth < memberPath.Length)
+                {
+                    cmdList.Add((l, o) => l.Add(subField.GetValue(l[l.Count - 1])));
+                    BuildPropertySubValue<T>(cmdList, type, memberPath, depth);
+                    cmdList.Add((l, o) => subField.SetValue(l[l.Count - 2], l[l.Count - 1]));
+                    cmdList.Add((l, o) => l.RemoveAt(l.Count - 1));
+                }
+                else
+                {
+                    if (subField.FieldType != typeof(T))
+                        return false;
+                    cmdList.Add((l, o) => subField.SetValue(l[l.Count - 1], o));
+                }
+
+                return true;
+            }
+
+            public void SetParameter(VFXParameter parameter)
+            {
+                if (parameter != m_Parameter)
+                {
+                    Unprepare();
+                    m_Parameter = parameter;
+                }
+            }
+
+            protected override void InternalPrepare()
+            {
+                m_ValueCmdList.Clear();
+                m_Stack.Clear();
+
+                m_ValueCmdList.Add(o => o.Add(m_Parameter.value));
+
+                BuildValue(m_ValueCmdList, portType, m_Parameter.exposedName);
+            }
+
+            void BuildValue(List<Action<List<object>>> cmdList, Type type, string propertyPath)
+            {
+                m_SerializedObject.Update();
+
+                string field = VisualEffectSerializationUtility.GetTypeField(type);
+                if (field != null)
+                {
+                    var vfxField = m_VFXPropertySheet.FindPropertyRelative(field + ".m_Array");
+                    SerializedProperty property = null;
+                    if (vfxField != null)
+                    {
+                        for (int i = 0; i < vfxField.arraySize; ++i)
+                        {
+                            property = vfxField.GetArrayElementAtIndex(i);
+                            var nameProperty = property.FindPropertyRelative("m_Name").stringValue;
+                            if (nameProperty == propertyPath)
+                            {
+                                break;
+                            }
+                            property = null;
+                        }
+                    }
+                    if (property?.FindPropertyRelative("m_Overridden") is { } overrideProperty)
+                    {
+                        property = property.FindPropertyRelative("m_Value");
+                        cmdList.Add(o => { if (overrideProperty.boolValue) PushProperty(o, property); });
+                    }
+                }
+                else
+                {
+                    foreach (var fieldInfo in type.GetFields(BindingFlags.Public | BindingFlags.Instance))
+                    {
+                        if (fieldInfo.FieldType == typeof(VFXSpace))
+                            continue;
+                        cmdList.Add(o =>
+                        {
+                            Push(o, fieldInfo);
+                        });
+                        BuildValue(cmdList, fieldInfo.FieldType, propertyPath + "_" + fieldInfo.Name);
+                        cmdList.Add(o =>
+                            Pop(o, fieldInfo)
+                        );
+                    }
+                }
+            }
+
+            void PushProperty(List<object> stack, SerializedProperty property)
+            {
+                stack[stack.Count - 1] = GetObjectValue(property);
+            }
+
+            void Push(List<object> stack, FieldInfo fieldInfo)
+            {
+                object prev = stack[stack.Count - 1];
+                stack.Add(fieldInfo.GetValue(prev));
+            }
+
+            void Pop(List<object> stack, FieldInfo fieldInfo)
+            {
+                fieldInfo.SetValue(stack[stack.Count - 2], stack[stack.Count - 1]);
+                stack.RemoveAt(stack.Count - 1);
+            }
+
+            class Property<T> : VFXGizmo.IProperty<T>
+            {
+                readonly List<Action<List<object>, object>> m_CmdList;
+                readonly List<object> m_Stack = new();
+                readonly SerializedObject m_SerializedObject;
+
+                public Property(SerializedObject serializedObject, List<Action<List<object>, object>> cmdList)
+                {
+                    m_SerializedObject = serializedObject;
+                    m_CmdList = cmdList;
+                }
+
+                public bool isEditable => true;
+
+
+                public void SetValue(T value)
+                {
+                    m_Stack.Clear();
+                    foreach (var cmd in m_CmdList)
+                    {
+                        cmd(m_Stack, value);
+                    }
+                    m_SerializedObject.ApplyModifiedProperties();
+                }
+            }
+        }
+
+
+        bool HasFrameBounds()
+        {
+            return targets.Length == 1;
+        }
+
+        //Callback used by scene view on 'F' shortcut.
+        Bounds OnGetFrameBounds()
+        {
+            return GetWorldBoundsOfTarget(targets[0]);
+        }
+
+        internal override Bounds GetWorldBoundsOfTarget(UnityObject targetObject)
+        {
+            if (m_GizmoDisplayed && m_GizmoedParameter != null)
+            {
+                ContextAndGizmo context = GetGizmo();
+
+                Bounds result = VFXGizmoUtility.GetGizmoBounds(context.context, (VisualEffect)target, context.gizmo);
+
+                return result;
+            }
+
+            return base.GetWorldBoundsOfTarget(targetObject);
+        }
+
+        private void OnSceneGUI()
+        {
+            if (m_GizmoDisplayed && m_GizmoedParameter != null && m_GizmoableParameters.Count > 0 && ((VisualEffect)target).visualEffectAsset != null)
+            {
+                ContextAndGizmo context = GetGizmo();
+                VFXGizmoUtility.Draw(context.context, (VisualEffect)target, context.gizmo);
+            }
+        }
+
+        protected override void SceneViewGUICallback()
+        {
+            base.SceneViewGUICallback();
+
+            if (m_GizmoableParameters.Count > 0)
+            {
+                int current = m_GizmoDisplayed ? m_GizmoableParameters.IndexOf(m_GizmoedParameter) : -1;
+                EditorGUI.BeginChangeCheck();
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("Gizmos", GUILayout.Width(50));
+                int result = EditorGUILayout.Popup(current, m_GizmoableParameters.Select(t => t.exposedName).ToArray(), GUILayout.Width(140), GUILayout.Height(20));
+                if (EditorGUI.EndChangeCheck() && result != current)
+                {
+                    m_GizmoedParameter = m_GizmoableParameters[result];
+                    if (!m_GizmoDisplayed)
+                    {
+                        m_GizmoDisplayed = true;
+                        EditMode.ChangeEditMode(EditMode.SceneViewEditMode.Collider, this);
+                    }
+                    Repaint();
+                }
+
+                if (m_GizmoedParameter != null && m_GizmoDisplayed)
+                {
+                    var context = GetGizmo();
+                    var gizmoError = VFXGizmoUtility.CollectGizmoError(context.context, (VisualEffect)target);
+                    if (gizmoError != GizmoError.None)
+                    {
+                        var content = VFXSlotContainerEditor.Contents.GetGizmoErrorContent(gizmoError);
+                        GUILayout.Label(content, VFXSlotContainerEditor.Styles.warningStyle, GUILayout.Width(19),
+                            GUILayout.Height(18));
+                    }
+                    else if (GUILayout.Button(VFXSlotContainerEditor.Contents.gizmoFrame, VFXSlotContainerEditor.Styles.frameButtonStyle, GUILayout.Width(19), GUILayout.Height(18)))
+                    {
+                        var bounds = VFXGizmoUtility.GetGizmoBounds(context.context, (VisualEffect)target, context.gizmo);
+                        context.context.Unprepare(); //Restore initial state : if gizmo isn't actually rendered, it could be out of sync
+                        var sceneView = SceneView.lastActiveSceneView;
+                        if (sceneView)
+                            sceneView.Frame(bounds, false);
+                    }
+                }
+                else
+                {
+                    var saveEnabled = GUI.enabled;
+                    GUI.enabled = false;
+                    GUILayout.Button(VFXSlotContainerEditor.Contents.gizmoFrame, VFXSlotContainerEditor.Styles.frameButtonStyle, GUILayout.Width(19), GUILayout.Height(18));
+                    GUI.enabled = saveEnabled;
+                }
+
+                GUILayout.EndHorizontal();
+            }
+        }
+
+        private void AutoAttachToSelection()
+        {
+            if ((Selection.activeObject as GameObject)?.GetComponent<VisualEffect>() is VisualEffect visualEffect)
+            {
+                foreach (var window in VFXViewWindow.GetAllWindows())
+                {
+                    window.AttachTo(visualEffect);
+                }
+            }
+        }
+
+        private void DetachIfDeleted()
+        {
+            VFXViewWindow.GetAllWindows().ToList().ForEach(x => x.DetachIfDeleted());
+        }
+
+        private void CreateNewVFX()
+        {
+            void OnTemplateCreate(string templateFilePath)
+            {
+                if (!string.IsNullOrEmpty(templateFilePath))
+                {
+                    var asset = AssetDatabase.LoadAssetAtPath<VisualEffectAsset>(templateFilePath);
+                    m_VisualEffectAsset.objectReferenceValue = asset;
+                    serializedObject.ApplyModifiedProperties();
+
+                    VFXViewWindow.GetWindow(asset, true).LoadAsset(asset, targets.Length > 1 ? target as VisualEffect : null);
+                }
+            }
+
+            VFXTemplateWindow.ShowCreateFromTemplate(null, OnTemplateCreate);
+        }
+    }
+}

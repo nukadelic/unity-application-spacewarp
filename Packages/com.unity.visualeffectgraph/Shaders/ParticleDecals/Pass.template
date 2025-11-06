@@ -1,0 +1,160 @@
+#pragma target 4.5
+${VFXPassForwardAdditionalPragma}
+
+struct ps_input
+{
+	float4 pos : SV_POSITION;
+
+	#if VFX_NEEDS_COLOR_INTERPOLATOR
+	nointerpolation float4 color : COLOR0;
+	#endif
+	#if USE_ALPHA_TEST || USE_FLIPBOOK || USE_EXPOSURE_WEIGHT
+	// x: alpha threshold
+	// y: texture index
+	// z: exposure weight
+	// w: texture index blend
+	nointerpolation float4 builtInInterpolants : TEXCOORD0;
+	#if USE_FLIPBOOK
+	#if USE_FLIPBOOK_ARRAY_LAYOUT
+			nointerpolation float flipBookSize : TEXCOORD6;
+		#else
+			nointerpolation float4 flipBookSize : TEXCOORD6;
+		#endif
+	#endif
+	#if USE_FLIPBOOK_MOTIONVECTORS
+	// x: motion vectors scale X
+	// y: motion vectors scale Y
+	nointerpolation float2 builtInInterpolants2 : TEXCOORD7;
+	#endif
+	#endif
+
+	nointerpolation float4 worldToDecal0 : TEXCOORD2;
+	nointerpolation float4 worldToDecal1 : TEXCOORD3;
+	nointerpolation float4 worldToDecal2 : TEXCOORD4;
+
+	#if VFX_NEEDS_POSWS_INTERPOLATOR
+	float3 posWS : TEXCOORD5;
+	#endif
+
+	UNITY_VERTEX_OUTPUT_STEREO
+
+	#if USE_UV_SCALE_BIAS
+	nointerpolation float4 scaleBias : TEXCOORD6;
+	#endif
+    VFX_VERTEX_OUTPUT_INSTANCE_INDEX
+
+};
+
+struct ps_output
+{
+	float4 color : SV_Target0;
+};
+
+#define VFX_VARYING_PS_INPUTS ps_input
+#define VFX_VARYING_POSCS pos
+#define VFX_VARYING_COLOR color.rgb
+#define VFX_VARYING_ALPHA color.a
+#define VFX_VARYING_ALPHATHRESHOLD builtInInterpolants.x
+#if USE_FLIPBOOK
+#define VFX_VARYING_TEXINDEX builtInInterpolants.y
+#if USE_FLIPBOOK_INTERPOLATION
+#define VFX_VARYING_TEXINDEXBLEND builtInInterpolants.w
+#endif
+#if USE_FLIPBOOK_ARRAY_LAYOUT
+	#define VFX_VARYING_FLIPBOOKSIZE flipBookSize
+#else
+	#define VFX_VARYING_FLIPBOOKSIZE flipBookSize.xy
+	#define VFX_VARYING_INVFLIPBOOKSIZE flipBookSize.zw
+#endif
+#endif
+#if USE_FLIPBOOK_MOTIONVECTORS
+#define VFX_VARYING_MOTIONVECTORSCALE builtInInterpolants2.xy
+#endif
+#if VFX_NEEDS_POSWS_INTERPOLATOR
+#define VFX_VARYING_POSWS posWS
+#endif
+#if USE_EXPOSURE_WEIGHT
+#define VFX_VARYING_EXPOSUREWEIGHT builtInInterpolants.z
+#endif
+#if USE_UV_SCALE_BIAS
+#define VFX_VARYING_UV_SCALE scaleBias.xy
+#define VFX_VARYING_UV_BIAS scaleBias.zw
+#endif
+
+${VFXBegin:VFXVertexAdditionalProcess}
+float4x4 worldToDecal = GetVFXToElementMatrix(
+	attributes.axisX,
+	attributes.axisY,
+	attributes.axisZ,
+	float3(attributes.angleX,attributes.angleY,attributes.angleZ),
+	float3(attributes.pivotX,attributes.pivotY,attributes.pivotZ),
+	size3,
+	attributes.position);
+
+#if VFX_LOCAL_SPACE
+worldToDecal = mul(worldToDecal, VFXGetWorldToObjectMatrix());
+#endif
+o.worldToDecal0 = worldToDecal[0];
+o.worldToDecal1 = worldToDecal[1];
+o.worldToDecal2 = worldToDecal[2];
+${VFXEnd}
+
+${VFXInclude("Shaders/ParticleHexahedron/Pass.template")}
+
+#if VFX_PASSDEPTH == VFX_PASSDEPTH_SELECTION
+int _ObjectId;
+int _PassValue;
+#elif VFX_PASSDEPTH == VFX_PASSDEPTH_PICKING
+float4 _SelectionID;
+#endif
+
+#pragma fragment frag
+ps_output frag(ps_input i)
+{
+	UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
+	ps_output o = (ps_output)0;
+	VFXTransformPSInputs(i);
+#if VFX_USE_GRAPH_VALUES
+    uint instanceActiveIndex = i.VFX_VARYINGS_INSTANCE_ACTIVE_INDEX;
+    ${VFXLoadGraphValues}
+#endif
+	float3 clipPos;
+
+	clipPos.xy = VFXGetNormalizedScreenSpaceUV(i.pos) * 2.0f - 1.0f;
+	clipPos.z = VFXSampleDepth(i.pos);
+	clipPos.y *= _ProjectionParams.x;
+
+    float4 hpositionWS = mul(UNITY_MATRIX_I_VP, float4(clipPos,1.0f));
+    float4 worldPos = float4(hpositionWS.xyz / hpositionWS.w, 1.0f);
+
+	float4x4 worldToElement;
+	worldToElement[0] = i.worldToDecal0;
+	worldToElement[1] = i.worldToDecal1;
+	worldToElement[2] = -1.0f * i.worldToDecal2; //Z points TOWARDS the surface, so we need to revert it
+	worldToElement[3] = float4(0,0,0,1);
+
+    float3 positionDS = mul(worldToElement, worldPos).xyz * 2.0f;
+
+	const float bias = 0.0f;
+	clip(1.0f - abs(positionDS) + bias);
+
+	float2 uv = positionDS.xy * 0.5f + 0.5f;
+
+	#define VFX_TEXTURE_COLOR VFXGetTextureColorWithProceduralUV(VFX_SAMPLER(mainTexture),i,uv)
+	${VFXApplyColor}
+
+	o.color = VFXApplyPreExposure(o.color, i);
+	o.color = VFXApplyFog(o.color,i);
+	VFXClipFragmentColor(o.color.a,i);
+
+#if VFX_PASSDEPTH == VFX_PASSDEPTH_SELECTION
+	o.color = float4(_ObjectId, _PassValue, 1.0, 1.0);
+#elif VFX_PASSDEPTH == VFX_PASSDEPTH_PICKING
+	o.color = _SelectionID;
+#else
+	//VFX_PASSDEPTH isn't defined in forward (but we are sharing the same template)
+	o.color.a = saturate(o.color.a);
+	o.color = VFXTransformFinalColor(o.color,i);
+#endif
+	return o;
+}

@@ -1,0 +1,20 @@
+default:
+  area: SRP Architecture & API
+
+workflow:
+  when:
+    path:
+      - ^.*Volume.*$
+  area: SRP Workflow
+
+tools:
+  when:
+    path:
+      - ^.*DebugManager.*$
+  area: Graphics Tools
+
+xr:
+  when:
+    path:
+      - ^.*XRSubsystem.*$
+  area: SRP XR

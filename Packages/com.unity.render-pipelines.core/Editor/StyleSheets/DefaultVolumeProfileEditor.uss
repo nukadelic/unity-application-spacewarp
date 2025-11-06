@@ -1,0 +1,23 @@
+.category-header {
+    font-size: 12px;
+    -unity-font-style: bold;
+    margin-bottom: 2px;
+    margin-top: 8px;
+    margin-left: 16px;
+}
+
+.content-container {
+    margin-bottom: 2px;
+    margin-top: 2px;
+    margin-left: 16px;
+}
+
+.search-field {
+    width: auto;
+}
+
+/* Allow the imgui foldout headers inside ListViews to start from the left edge all the way to the right */
+.unity-list-view {
+    margin-left: -31px;
+    margin-right: -6px;
+}

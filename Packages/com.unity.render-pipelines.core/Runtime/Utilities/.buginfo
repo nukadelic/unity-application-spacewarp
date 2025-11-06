@@ -1,0 +1,27 @@
+default:
+  area: SRP Architecture & API
+
+Workflow:
+  when:
+    path:
+      - ^.*CameraCaptureBridge?.*$
+      - ^.*CoreRenderPipelinePreferences?.*$
+      - ^.*CoreUtils?.*$
+      - ^.*DelegateUtility?.*$
+      - ^.*MeshGizmo?.*$
+      - ^.*ResourceReloader?.*$
+      - ^.*SceneRenderPipeline?.*$
+      - ^.*TextureCurve?.*$ 
+  area: SRP Workflow
+
+xr:
+  when:
+    path:
+      - ^.*XRUtils?.*$
+  area: SRP XR
+
+workflow:
+  when:
+    path:
+      - ^.*TextureCurve?.*$
+  area: SRP Workflow

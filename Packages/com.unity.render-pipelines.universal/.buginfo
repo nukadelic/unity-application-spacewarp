@@ -1,0 +1,20 @@
+old:
+  area: Universal RP
+
+Workflow:
+  when:
+    path:
+      - ^.*Volume?.*$
+      - ^.*GlobalSettings?.*$
+      - ^.*AdditionalLight?.*$
+      - ^.*Camera?.*$
+      - ^.*ContextualMenuDispatcher?.*$
+  area: SRP Workflow
+  
+Tools:
+  when:
+    path:
+      - ^.*Analytic?.*$
+      - ^.*LightExplorer?.*$
+      - ^.*MaterialUpgrader?.*$
+  area: Graphics Tools

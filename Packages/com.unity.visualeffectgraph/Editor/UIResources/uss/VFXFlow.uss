@@ -1,0 +1,35 @@
+VFXFlowAnchor.port.EdgeConnector
+{
+    padding-left:0;
+    padding-right:0;
+    margin-left: 12px;
+    margin-right: 12px;
+    width: 100px;
+    height: 28px;
+    --port-color:rgb(220, 220, 220);
+    flex-direction:column-reverse;
+}
+
+VFXFlowAnchor.port.EdgeConnector.output
+{
+    flex-direction:column;
+}
+
+
+VFXFlowAnchor.port.EdgeConnector #connector
+{
+    width: 12px;
+    height: 12px;
+    margin-left: 2px;
+    margin-right: 2px;
+}
+
+VFXFlowAnchor.port.EdgeConnector #type
+{
+    position:Absolute;
+    width: 42px;
+    top: 1px;
+    padding-left: 30px;
+    margin-left:0;
+    margin-right:0;
+}

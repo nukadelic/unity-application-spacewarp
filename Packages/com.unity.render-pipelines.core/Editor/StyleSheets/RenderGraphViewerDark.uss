@@ -1,0 +1,80 @@
+/* Dark theme colors */
+:root {
+    --resource-read-color: #A9D136; /* keep in sync with kReadWriteBlockFillColorDark */
+    --resource-write-color: #FF5D45;
+    --merged-pass-accent-color: #395C94;
+    --native-pass-accent-color: #395C94;
+    --native-pass-accent-compatible-color: #62B0DE;
+    --pass-block-color--async: #FFC107;
+    --pass-block-border-color: var(--unity-colors-highlight-background-hover-lighter);
+    --pass-block-color--highlight: white;
+    --pass-block-text-color--highlight: white;
+    --pass-block-color--culled: black;
+    --grid-line-color: #454545;
+    --grid-line-color--hover: white;
+    --resource-helper-line-color: darkgray;
+    --resource-helper-line-color--hover: white;
+    --usage-range-color: #7D7D7D;
+    --main-background-color: #313131;
+    --side-panel-background-color: #383838;
+    --side-panel-item-border-color: #666666;
+    --side-panel-secondary-text-color: #808080;
+}
+
+#capture-button {
+    background-image: url("../Icons/RenderGraphViewer/d_Refresh@2x.png");
+}
+
+#capture-button:hover {
+    background-color: #424242;
+}
+
+#capture-button:active {
+    background-color: #6A6A6A;
+}
+
+.resource-icon--imported {
+    background-image: url("../Icons/RenderGraphViewer/d_Import@2x.png");
+}
+
+.resource-icon--global-dark {
+    background-image: url("../Icons/RenderGraphViewer/d_Global@2x.png");
+}
+
+.resource-icon--global-light {
+    background-image: url("../Icons/RenderGraphViewer/Global@2x.png");
+}
+
+.resource-icon--texture {
+    background-image: url("../Icons/RenderGraphViewer/d_Texture@2x.png");
+}
+
+.resource-icon--buffer {
+    background-image: url("../Icons/RenderGraphViewer/d_Buffer@2x.png");
+}
+
+.resource-icon--acceleration-structure {
+    background-image: url("../Icons/RenderGraphViewer/d_AccelerationStructure@2x.png");
+}
+
+.resource-icon--fbfetch {
+    background-image: url("../Icons/RenderGraphViewer/FramebufferFetch@2x.png");
+}
+
+.resource-icon--multiple-usage {
+    background-image: url("../Icons/RenderGraphViewer/d_MultipleUsage.png");
+}
+
+.pass-block.pass-block-script-link {
+    background-image: url("../Icons/RenderGraphViewer/d_ScriptLink@2x.png");
+    background-color: #C4C4C4;
+    border-color: #C4C4C4;
+}
+
+.custom-foldout-arrow #unity-checkmark {
+    -unity-background-image-tint-color: #c0c0c0;
+}
+
+.custom-foldout-arrow > Toggle > VisualElement:hover #unity-checkmark {
+    -unity-background-image-tint-color: white;
+}

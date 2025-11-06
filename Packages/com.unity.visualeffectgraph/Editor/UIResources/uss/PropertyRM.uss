@@ -1,0 +1,394 @@
+.propertyrm
+{
+    flex-direction: row;
+    align-items:center;
+    align-self: stretch;
+}
+
+.unity-base-field {
+    margin: 0;
+    padding: 1px 0;
+}
+
+.propertyrm.expandable
+{
+    padding-left: 10px;
+    background-size: 12px 12px;
+    background-position-x: left;
+    background-image:resource("Builtin Skins/DarkSkin/Images/IN foldout.png");
+}
+
+.propertyrm.expandable:hover
+{
+    background-image:resource("Builtin Skins/DarkSkin/Images/IN foldout focus.png");
+}
+
+.propertyrm.expandable:hover:active
+{
+    background-image:resource("Builtin Skins/DarkSkin/Images/IN foldout act.png");
+}
+
+.propertyrm.expandable.icon-expanded
+{
+    background-image:resource("IN foldout on.png");
+}
+
+.propertyrm.expandable.icon-expanded:hover
+{
+    background-image:resource("IN foldout focus on.png");
+}
+.propertyrm.expandable.icon-expanded:active
+{
+    background-image:resource("IN foldout act on.png");
+}
+
+.propertyrm.hasDepth {
+    border-left-width: 1px;
+    border-left-color: #4c4c4c;
+}
+
+.propertyrm.hasDepth > Label {
+    padding-left: 20px;
+ }
+
+.propertyrm.expandable.hasDepth {
+    background-position-x: 4px;
+}
+
+.propertyrm #spacebutton
+{
+    border-radius: 3px;
+    width: 22px;
+    height: 16px;
+    margin-right: 8px;
+    padding-left: 16px;
+    font-size: 6px;
+    -unity-text-align: middle-center;
+    background-position: left;
+    background-size: 14px 14px;
+}
+
+.propertyrm > Label
+{
+    margin-left: 4px;
+    height: 16px;
+    overflow:hidden;
+    -unity-text-align:middle-left;
+}
+
+.propertyrm > VFXEnumField.fieldContainer .unity-enum-field__input
+{
+    height: 16px;
+    margin-left: 8px;
+    flex-grow: 1;
+}
+
+.propertyrm VFXMatrix4x4Field.fieldContainer
+{
+    flex:1 0 auto;
+    flex-direction: column;
+}
+
+.propertyrm #spacebutton.World {
+    background-image : url("project:///Packages/com.unity.visualeffectgraph/Editor/UIResources/VFX/d_WorldSpace@2x.png");
+}
+.propertyrm VFXMatrix4x4Field #matrixContainer {
+    flex-grow: 1;
+}
+
+.propertyrm #spacebutton.Local {
+    background-image : url("project:///Packages/com.unity.visualeffectgraph/Editor/UIResources/VFX/d_LocalSpace@2x.png");
+}
+.propertyrm VFXMatrix4x4Field #matrixLine {
+    flex-grow: 1;
+    flex-direction: row;
+}
+
+.propertyrm #spacebutton.None {
+    background-image : url("project:///Packages/com.unity.visualeffectgraph/Editor/UIResources/VFX/d_NoneSpace@2x.png");
+}
+.propertyrm VFXMatrix4x4Field Label {
+    width: 18px;
+    margin-left: 4px;
+}
+
+.propertyrm #spacebutton:hover {
+    background-color: #515151;
+    color: var(--unity-colors-default-text);
+}
+
+.propertyrm .unity-base-text-field *
+{
+    -unity-text-align: middle-left;
+}
+
+.propertyrm:disabled
+{
+    opacity: 1;
+}
+
+.propertyrm .label
+{
+    color:#888;
+    flex:0 0 auto;
+    padding-left: 4px;
+    padding-right:0;
+}
+
+.propertyrm .label.first
+{
+    padding-left:0;
+}
+
+.propertyrm .fieldContainer
+{
+    flex-direction:row;
+    flex:1 0 auto;
+    height: auto;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.propertyrm .fieldContainer:disabled {
+    opacity: 1;
+}
+
+.propertyrm .unity-base-field:disabled {
+    opacity: 1;
+}
+
+.propertyrm .unity-base-field:disabled Label {
+    cursor: arrow;
+}
+
+.propertyrm .unity-base-field:disabled .unity-base-field__input {
+    opacity: 0.5;
+}
+
+.propertyrm .unity-enum-field
+{
+    flex:1 1;
+    flex-basis: auto;
+    padding: 1px 0;
+}
+
+.propertyrm  .maincontainer
+{
+    flex:1 1 auto;
+    flex-direction:column;
+    align-items:stretch;
+}
+
+.propertyrm .colordisplay
+{
+    flex:1 0 auto;
+}
+
+ColorPropertyRM
+{
+    flex-direction:row;
+    height: 36px;
+}
+
+ColorPropertyRM .colorcontainer, Vector3PropertyRM .colorcontainer
+{
+    flex:1 0 auto;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-color:#000;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+ColorPropertyRM > .maincontainer > .fieldContainer
+{
+    flex:0 0 auto;
+}
+
+Vector3PropertyRM VFXColorField
+{
+    flex: 0 0 auto;
+    margin-left: 4px;
+}
+
+Vector3PropertyRM.propertyrm VFXVector3Field.fieldContainer
+{
+    height: 20px;
+    flex: 1 0 auto;
+}
+
+VFXVector3Field .unity-float-field {
+    margin-left: 4px;
+}
+
+
+ColorPropertyRM .unity-float-field
+{
+    flex: 1 0 auto;
+}
+
+IntPropertyRM .unity-integer-field
+{
+    align-self:flex-end;
+    margin-left:0;
+    margin-right:0;
+    margin-top:0;
+    margin-bottom:0;
+    flex:1 0 auto;
+}
+
+UintPropertyRM .unity-long-field
+{
+    align-self:flex-end;
+    margin-left:0;
+    margin-right:0;
+    margin-top:0;
+    margin-bottom:0;
+    flex:1 0 auto;
+}
+
+CurvePropertyRM .unity-curve-field {
+    flex: 1 0 auto;
+    min-height: 18px;
+}
+
+CurvePropertyRM .unity-curve-field__input {
+    flex: 1 1 auto;
+    height: 17px;
+    background-color: #2a2a2a;
+    border-color: #212121;
+    border-top-color: #0d0d0d;
+    border-width: 1px;
+    border-radius: 3px;
+    margin-top: 0;
+    padding: 0;
+}
+
+CurvePropertyRM .unity-curve-field:focus .unity-curve-field__input {
+    border-color: var(--unity-colors-input_field-border-focus);
+}
+
+CurvePropertyRM
+{
+    flex:1 0 auto;
+    min-width: 100px;
+}
+
+StringPropertyRM VFXStringField .unity-text-field
+{
+    flex-grow: 1;
+    flex-shrink: 1;
+    margin: 0 0 0 1px;
+}
+
+Matrix4x4PropertyRM.propertyrm > .fieldContainer
+{
+    height: auto;
+    flex-direction: row;
+}
+Matrix4x4PropertyRM.propertyrm VFXMatrix4x4Field
+{
+    height: 72px;
+}
+
+
+.propertyrm #indeterminate
+{
+    flex:1 1 auto;
+    padding-left: 3px;
+    padding-right: 3px;
+    padding-top: 0;
+    padding-bottom: 0;
+    cursor: text;
+    overflow: visible;
+    -unity-overflow-clip-box: content-box;
+    flex : 1 1 auto;
+    -unity-text-align: middle-left;
+    background-color: rgb(42,42,42);
+    border-top-width: 1px;
+    border-color: rgb(13,13,13);
+    border-radius: 2px;
+    color: rgb(180,180,180);
+}
+.propertyrm VFXColorField #indeterminate
+{
+    border-top-width: 0px;
+    border-radius: 0;
+}
+
+.propertyrm .sliderField #indeterminate
+{
+    flex:0 0 auto;
+}
+
+.ListPropertyRM > .ReorderableList
+{
+    margin-top: 4px;
+    margin-left: 0;
+    margin-right: 4px;
+    flex: 1 1 auto;
+}
+
+HLSLPropertyRM VFXTextEditorField Button.propertyrm-button.unity-button
+{
+    flex-grow: 1;
+    margin-top: 0;
+    height: 17px;
+}
+
+DropdownField {
+    margin: 0;
+    flex: 1 1;
+}
+ColorPropertyRM
+{
+    height: auto;
+}
+
+VFXColorField
+{
+    margin-right: 10px;
+    margin-bottom: 4px;
+}
+VFXColorField .colorcontainer
+{
+    margin-right: 24px;
+}
+
+.propertyrm .unity-base-field > Label {
+    min-width: initial;
+    padding-top: 0;
+    align-self: center;
+    overflow: hidden;
+    padding: 0;
+    padding-left: 4px;
+    color: #888888;
+    white-space: pre;
+}
+
+#settings .propertyrm .unity-base-field > Label {
+    margin-left: 14px;
+    margin-right: 0;
+}
+
+#settings .propertyrm .fieldContainer > Label {
+    margin-left: 14px;
+}
+
+.fieldContainer #FieldParent {
+    flex-basis: 1px;
+}
+
+.fieldContainer > Label {
+    align-self: center;
+}
+
+.propertyrm.hasDepth > .unity-base-field {
+    margin-left: 4px;
+}
+
+.fieldContainer .unity-base-text-field__input {
+    width: 36px;
+}

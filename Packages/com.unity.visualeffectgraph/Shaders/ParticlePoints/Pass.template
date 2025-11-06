@@ -1,0 +1,51 @@
+#if !(defined(VFX_VARYING_PS_INPUTS) && defined(VFX_VARYING_POSCS))
+#error VFX_VARYING_PS_INPUTS and VFX_VARYING_POSCS must be defined.
+#endif
+
+${VFXPerPassInclude}
+${VFXGeneratedBlockFunction}
+
+struct vs_input
+{
+	VFX_DECLARE_INSTANCE_ID
+};
+
+#pragma vertex vert
+
+VFX_VARYING_PS_INPUTS vert(uint id : SV_VertexID, vs_input i)
+{
+	VFX_VARYING_PS_INPUTS o = (VFX_VARYING_PS_INPUTS)0;
+
+	UNITY_SETUP_INSTANCE_ID(i);
+	UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
+
+	uint index = id;
+
+	${VFXInitInstancing}
+	${VFXLoadGraphValues}
+
+	${VFXLoadContextData}
+	uint systemSeed = contextData.systemSeed;
+	uint nbMax = contextData.maxParticleCount;
+
+	${VFXLoadAttributesOrCull}
+	${VFXProcessBlocks}
+
+	if (!attributes.alive)
+	{
+		o.pos.x = VFX_NAN;
+		return o; // cull
+	}
+
+	float3 inputVertexPosition = float3(0.0f, 0.0f, 0.0f);
+	float3 vPos = attributes.position;
+	o.VFX_VARYING_POSCS = TransformPositionVFXToClip(vPos);
+
+	${VFXVertexComputeCurrentAndPreviousClipPos}
+	${VFXVertexCommonProcess}
+	${VFXVertexAdditionalProcess}
+
+    o.pointSize = 1;
+
+	return o;
+}

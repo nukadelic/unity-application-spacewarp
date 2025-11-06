@@ -1,0 +1,24 @@
+rule1:
+  area: SRP Architecture & API
+
+rule2:
+  when:
+    path:
+      - ^.*SpeedTree.*$
+  area: Environment Effects
+
+rule3:
+  when:
+    path:
+      - ^.*Camera.*$
+      - ^.*ContextualMenuDispatcher.*$
+      - ^.*CoreRenderPipelinePreferences.*$
+      - ^.*InspectorCurveEditor.*$
+      - ^.*RemoveAdditionalDataUtils.*$
+  area: SRP Workflow
+  
+rule4:
+  when:
+    path:
+      - ^.*Upgrader.*$
+  area: Graphics Tools

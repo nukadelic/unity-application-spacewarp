@@ -1,0 +1,84 @@
+/* Light theme colors */
+:root {
+    --resource-read-color: #679C33; /* keep in sync with kReadWriteBlockFillColorLight */
+    --resource-write-color: #A83645;
+    --merged-pass-accent-color: #475F78;
+    --native-pass-accent-color: #475F78;
+    --native-pass-accent-compatible-color: #62B0DE;
+    --pass-block-color--async: #C99700;
+    --pass-block-border-color: var(--unity-colors-highlight-background-hover-lighter);
+    --pass-block-color--highlight: white;
+    --pass-block-text-color--highlight: var(--unity-colors-default-text-hover);
+    --pass-block-color--culled: rgb(30, 30, 30);
+    --grid-line-color: var(--unity-colors-app_toolbar_button-background-hover);
+    --grid-line-color--hover: white;
+    --resource-helper-line-color: #b0b0b0;
+    --resource-helper-line-color--hover: white;
+    --usage-range-color: #979797;
+    --main-background-color: #c8c8c8;
+    --side-panel-background-color: #cbcbcb;
+    --side-panel-item-border-color: #666666;
+    --side-panel-secondary-text-color: #707070;
+}
+
+#capture-button {
+    background-image: url("../Icons/RenderGraphViewer/Refresh@2x.png");
+}
+
+#capture-button:hover {
+    background-color: #BBBBBB;
+}
+
+#capture-button:active {
+    background-color: #656565;
+}
+
+.resource-icon--imported {
+    background-image: url("../Icons/RenderGraphViewer/Import@2x.png");
+}
+
+.resource-icon--global-dark {
+    background-image: url("../Icons/RenderGraphViewer/Global@2x.png");
+}
+
+.resource-icon--global-light {
+    background-image: url("../Icons/RenderGraphViewer/d_Global@2x.png");
+}
+
+.resource-icon--texture {
+    background-image: url("../Icons/RenderGraphViewer/Texture@2x.png");
+}
+
+.resource-icon--buffer {
+    background-image: url("../Icons/RenderGraphViewer/Buffer@2x.png");
+}
+
+.resource-icon--acceleration-structure {
+    background-image: url("../Icons/RenderGraphViewer/AccelerationStructure@2x.png");
+}
+
+.resource-icon--fbfetch {
+    background-image: url("../Icons/RenderGraphViewer/d_FramebufferFetch@2x.png");
+}
+
+.resource-icon--multiple-usage {
+    background-image: url("../Icons/RenderGraphViewer/MultipleUsage.png");
+}
+
+.resource-helper-line--highlight {
+    background-size: 8px 20px; /* light theme needs a wider dashed line to be properly visible */
+}
+
+.pass-block.pass-block-script-link {
+    background-image: url("../Icons/RenderGraphViewer/ScriptLink@2x.png");
+    background-color: #555555;
+    border-color: #555555;
+}
+
+.custom-foldout-arrow #unity-checkmark {
+    -unity-background-image-tint-color: black;
+}
+
+.custom-foldout-arrow > Toggle > VisualElement:hover #unity-checkmark {
+    -unity-background-image-tint-color: grey;
+}

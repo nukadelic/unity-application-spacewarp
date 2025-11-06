@@ -1,0 +1,31 @@
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
+#include "Packages/com.unity.render-pipelines.core/Runtime/GPUDriven/InstanceData/InstanceWindDataUpdateDefs.cs.hlsl"
+
+#pragma kernel WindDataCopyHistoryMain
+
+uint _WindDataQueueCount;
+int4 _WindParamAddressArray[MAX_WIND_PARAMS_COUNT];
+int4 _WindHistoryParamAddressArray[MAX_WIND_PARAMS_COUNT];
+
+ByteAddressBuffer _WindDataUpdateIndexQueue;
+RWByteAddressBuffer _WindDataBuffer;
+
+[numthreads(64, 1, 1)]
+void WindDataCopyHistoryMain(uint3 dispatchThreadID : SV_DispatchThreadID)
+{
+    if (dispatchThreadID.x >= _WindDataQueueCount)
+        return;
+
+    uint instanceIndex = _WindDataUpdateIndexQueue.Load(dispatchThreadID.x << 2);
+    uint instanceByteOffset = instanceIndex * 16;
+
+    uint4 windParams[MAX_WIND_PARAMS_COUNT];
+
+    UNITY_UNROLL
+    for (int i = 0; i < MAX_WIND_PARAMS_COUNT; ++i)
+        windParams[i] = _WindDataBuffer.Load4(_WindParamAddressArray[i].x + instanceByteOffset);
+    
+    UNITY_UNROLL
+    for (int j = 0; j < MAX_WIND_PARAMS_COUNT; ++j)
+        _WindDataBuffer.Store4(_WindHistoryParamAddressArray[j].x + instanceByteOffset, windParams[j]);
+}

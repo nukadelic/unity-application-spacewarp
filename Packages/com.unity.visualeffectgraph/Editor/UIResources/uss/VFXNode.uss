@@ -1,0 +1,150 @@
+#divider.vertical {
+    width: 0.01px;
+    border-right-width: 1px;
+}
+
+#divider.vertical.hidden {
+    width:0;
+    border-right-width: 0;
+}
+
+.VFXNodeUI.node #node-border > #title
+{
+    justify-content:flex-start;
+    border-radius: 6px 6px 0 0;
+    border-bottom-width: 1px;
+    border-bottom-color: #242424;
+}
+
+.VFXNodeUI.node #node-border > #title > Label {
+    overflow:hidden;
+}
+
+VFXBlockUI.node #node-border > #title > Label.first {
+    margin-left: 54px;
+}
+
+.VFXNodeUI.node #node-border > #title > #spacer {
+    flex-grow: 1;
+}
+
+.VFXNodeUI #contents
+{
+    background-color: rgba(63,63,63,0.8);
+    border-radius: 0 0 6px 6px;
+}
+
+
+.VFXNodeUI #settings
+{
+    border-bottom-color: rgba(35,35,35,0.8);
+    border-bottom-width: 1px;
+    margin-top: 8px;
+    margin-bottom: 0px;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-bottom: 8px;
+    overflow:hidden;
+}
+
+.VFXNodeUI.collapsed #settings
+{
+    display:none;
+    max-height:0;
+    height:0;
+}
+
+.VFXNodeUI #settings.nosettings {
+    display: none;
+}
+
+.node > #node-border > #title #collapse-button {
+    width: 24px;
+    height: 24px;
+    margin-right: 4px;
+    align-self: center;
+    border-radius: 3px;
+    opacity: 0.5;
+    background-size: 16px 16px;
+}
+
+.node > #node-border > #title #collapse-button:hover {
+    opacity: 1;
+    background-color: #2B2B2B;
+}
+
+.node > #node-border > #title #collapse-button:disabled {
+    background-color: initial;
+    opacity: 0.2;
+}
+
+.node.block-disabled > #node-border > #title #collapse-button:hover {
+    opacity: 1;
+    background-color: #383838;
+}
+
+.node.collapsed > #node-border > #title #collapse-button {
+    background-image: resource("GraphView/Nodes/NodeChevronLeft@2x.png");
+}
+
+.node.expanded > #node-border > #title #collapse-button {
+    background-image : resource("GraphView/Nodes/NodeChevronDown@2x.png");
+}
+
+.node.superCollapsed > #node-border > #title > #edit,.VFXNodeUI.superCollapsed > #node-border > #title > #collapse-button
+{
+    display: none;
+}
+
+.VFXNodeUI.node #contents > #top > #input
+{
+    padding-top: 6px;
+    padding-bottom: 6px;
+    flex: 1 1 auto;
+    background-color: rgba(0,0,0,0.0);
+}
+
+.VFXNodeUI.node #contents > #top > #output
+{
+    padding-top: 6px;
+    padding-bottom: 6px;
+    flex: 0 1 auto;
+    border-radius: 0 0 6px 0;
+}
+
+#line
+{
+    background-color:#4c4c4c;
+}
+
+.VFXNodeUI.hovered #selection-border
+{
+    border-width: 2px;
+    background-color:rgba(255,128,0,0.4);
+    border-color: rgba(255,128,0,1);
+}
+
+#title Label {
+    align-self: center;
+}
+
+.setting {
+    align-self: center;
+    margin-left: 4px;
+    margin-right: 4px;
+    flex-grow: 0;
+    padding: 1px 2px;
+    border-width: 0;
+    border-radius: 2px;
+    color: #B7B7B7;
+    background-color: #323232;
+}
+
+VFXContextUI #inside > #title > .setting {
+    color: #B1B1B1;
+    background-color: #272727;
+}
+
+VFXBlockUI #top, VFXOperatorUI #top {
+    flex-grow: 1;
+}

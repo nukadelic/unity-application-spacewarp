@@ -1,0 +1,66 @@
+#pragma kernel CSMain
+${VFXPragmaOnlyRenderers}
+${VFXPragmaRequire}
+
+${VFXGlobalInclude}
+${VFXGlobalDeclaration}
+${VFXInclude("Shaders/VFXParticleCommon.template")}
+
+CBUFFER_START(sortParamsConst)
+    uint dispatchWidth;
+    ${VFXInstancingConstants}
+CBUFFER_END
+
+ByteAddressBuffer attributeBuffer;
+StructuredBuffer<uint> inputBuffer;
+
+struct Kvp
+{
+	float sortKey;
+	uint index;
+};
+
+RWStructuredBuffer<Kvp> outputBuffer;
+
+${VFXPerPassInclude}
+
+[numthreads(NB_THREADS_PER_GROUP,1,1)]
+void CSMain(uint3 groupId          : SV_GroupID,
+            uint3 groupThreadId    : SV_GroupThreadID)
+{
+	uint id = GetThreadId(groupId, groupThreadId, dispatchWidth);
+	uint index = id;
+    ${VFXInitInstancing}
+
+	uint threshold = inputBuffer[instanceActiveIndex];
+    if(index == 0)
+        outputBuffer[instanceActiveIndex].index = threshold; //Store the count here
+
+	if (index < threshold)
+	{
+#if HAVE_VFX_MODIFICATION
+        ${VFXLoadGraphValues}
+
+    #if VFX_LOCAL_SPACE
+        ${VFXLoadParameter:{localToWorld}}
+        vfxLocalToWorld = localToWorld;
+
+        ${VFXLoadParameter:{worldToLocal}}
+        vfxWorldToLocal = worldToLocal;
+    #else
+        vfxWorldToLocal = k_identity4x4;
+        vfxLocalToWorld = k_identity4x4;
+    #endif
+#endif
+
+        uint indirectId = index + instancingBatchSize + instanceActiveIndex * RAW_CAPACITY;
+		uint index = inputBuffer[indirectId];
+
+		VFXAttributes attributes = (VFXAttributes)0;
+        ${VFXLoadAttributes}
+
+        ${VFXFeedSortingKeys}
+
+        outputBuffer[indirectId] = output;
+	}
+}

@@ -1,0 +1,10 @@
+rule1:
+  area: SRP Architecture & API
+
+rule2:
+  when:
+    path:
+      - ^.*CoreAttributes.*$
+      - ^.*IAdditionalData.*$
+      - ^.*Reload.*$
+  area: SRP Workflow

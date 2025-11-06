@@ -1,0 +1,88 @@
+${VFXShaderTags}
+
+${VFXInclude("Shaders/VFXParticleCommon.template")}
+${VFXOutputRenderState}
+
+HLSLINCLUDE
+${VFXPragmaOnlyRenderers}
+${VFXPragmaRequire}
+${VFXGlobalInclude}
+${VFXGlobalDeclaration}
+
+#define VFX_NEEDS_COLOR_INTERPOLATOR (VFX_USE_COLOR_CURRENT || VFX_USE_ALPHA_CURRENT)
+#if HAS_STRIPS
+#define VFX_OPTIONAL_INTERPOLATION
+#else
+#define VFX_OPTIONAL_INTERPOLATION nointerpolation
+#endif
+
+#if VFX_USE_INSTANCING
+#define VFX_VERTEX_OUTPUT_INSTANCE_INDEX nointerpolation uint2 instanceIndices : INDEX0; //instanceCurrentIndex, instanceActiveIndex
+#define VFX_VARYINGS_INSTANCE_CURRENT_INDEX instanceIndices.x
+#define VFX_VARYINGS_INSTANCE_ACTIVE_INDEX instanceIndices.y
+#ifdef UNITY_INSTANCING_ENABLED
+    #define VFX_FRAG_SETUP_INSTANCE_ID(i) unity_InstanceID = i.VFX_VARYINGS_INSTANCE_CURRENT_INDEX
+#else
+    #define VFX_FRAG_SETUP_INSTANCE_ID(i)
+#endif
+#else
+#define VFX_VERTEX_OUTPUT_INSTANCE_INDEX
+#endif
+
+ByteAddressBuffer attributeBuffer;
+
+#if VFX_HAS_INDIRECT_DRAW
+StructuredBuffer<uint> indirectBuffer;
+#endif
+
+#if USE_DEAD_LIST_COUNT
+StructuredBuffer<uint> deadList;
+#endif
+
+#if HAS_STRIPS_DATA
+StructuredBuffer<uint> stripDataBuffer;
+#endif
+
+#if VFX_FEATURE_MOTION_VECTORS
+ByteAddressBuffer elementToVFXBufferPrevious;
+
+#if defined(VFX_FEATURE_MOTION_VECTORS_VERTS)
+
+#define VFX_DECLARE_MOTION_VECTORS_STORAGE(coordA, coordB)\
+noperspective float4 cPosPreviousAndNonJiterred : TEXCOORD##coordA;
+
+#define VFX_DECLARE_MOTION_VECTORS_VARYING_PREVIOUS cPosPreviousAndNonJiterred.xy
+#define VFX_DECLARE_MOTION_VECTORS_VARYING_NONJITTER cPosPreviousAndNonJiterred.zw
+
+#else
+
+#define VFX_DECLARE_MOTION_VECTORS_STORAGE(coordA, coordB)\
+float4 cPosPrevious : TEXCOORD##coordA;\
+float4 cPosNonJiterred : TEXCOORD##coordB;
+
+#define VFX_DECLARE_MOTION_VECTORS_VARYING_PREVIOUS cPosPrevious
+#define VFX_DECLARE_MOTION_VECTORS_VARYING_NONJITTER cPosNonJiterred
+
+#endif
+#endif
+
+CBUFFER_START(outputParamsConst)
+    ${VFXInstancingConstants}
+    float3 cameraXRSettings;
+CBUFFER_END
+
+UNITY_INSTANCING_BUFFER_START(PerInstance)
+    UNITY_DEFINE_INSTANCED_PROP(float, _InstanceIndex)
+    UNITY_DEFINE_INSTANCED_PROP(float, _InstanceActiveIndex)
+UNITY_INSTANCING_BUFFER_END(PerInstance)
+
+// Helper macros to always use a valid instanceID
+#if defined(UNITY_STEREO_INSTANCING_ENABLED)
+	#define VFX_DECLARE_INSTANCE_ID     UNITY_VERTEX_INPUT_INSTANCE_ID
+	#define VFX_GET_INSTANCE_ID(i)      unity_InstanceID
+#else
+	#define VFX_DECLARE_INSTANCE_ID     uint instanceID : SV_InstanceID;
+	#define VFX_GET_INSTANCE_ID(i)      i.instanceID
+#endif
+
+ENDHLSL

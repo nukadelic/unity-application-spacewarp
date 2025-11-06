@@ -2,12 +2,12 @@ Feed me a beer (૭ ◉༬◉)૭⁾⁾⁾⁾ [![Donate](https://img.shields.io/
   
 # Application Spacewarp Template Project
   
-Project is preconfigured with ASW for the Oculus Quest 1 &amp; 2 using a custom render pipeline  
-  
-> ⚠ If you having trouble with dependencies on a freshly cloned project , make sure the editor have your account signed in so the package manager can download the dependencies , if you still can't open then : enter safe mode -> exit safe -> re import all assets .  
-> * Starting from Jul-2023 the oculus store apk's must target Android 12L 
-  
-![screenshot](https://raw.githubusercontent.com/nukadelic/unity-application-spacewarp/master/Img/screenshot.png)  
+Preconfigured project to support application space warp 
+
+### Update (Novermber-2025)
+
+* Upgrade to unity 6000 , purged old project , merged [DevDunk's project settings](https://github.com/smitdylan2001/Unity-6-URP-XR-Base) with latest [oculus URP fork](https://github.com/Oculus-VR/Unity-Graphics/commit/99353c21090bd40a239c619036beb3b605121919)
+* ⚠ Version specific bug : [Gizmos don't work](https://github.com/Oculus-VR/Unity-Graphics/issues/55) - tried several 6000.x subversion and they all seem to be effected . 
 
 ### Update (Novermber-2023)
 
